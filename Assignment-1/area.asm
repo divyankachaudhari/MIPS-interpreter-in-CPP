@@ -58,7 +58,6 @@ main:
 		syscall
 		move 		$t1, 		$v0					
 
-
 		sub 		$t2, 		$t0, 		$t8			#storing the value of x2-x1 in an integer register
 		mtc1.d 		$t2, 		$f2						#storing the value of the x2-x1 in a floating point register
 		cvt.d.w 	$f2,		$f2
@@ -75,7 +74,6 @@ main:
 			mtc1.d 		$t4, 		$f4
 			cvt.d.w 	$f4, 		$f4
 
-
 			mul			$s4,		$t6,		$t6			#y1^2
 			mul			$t9, 		$t9,		$t9			#y2^2
 			add 		$t4, 		$s4,	 	$t9			#y1^2+y2^2
@@ -85,16 +83,13 @@ main:
 
 			j 			extras
 
-
 		positive:
-
 		
 			abs 		$t6, 		$t1
 			abs			$t9,	 	$t9
 			add			$t4, 		$t6, 		$t9			#storing y1+y2
 			mtc1.d 		$t4, 		$f4						#storing y1+y2 in floating point register
 			cvt.d.w 	$f4, 		$f4		
-
 
 		extras:	
 			mul.d 		$f2, 		$f2, 		$f4 		#storing the final value
