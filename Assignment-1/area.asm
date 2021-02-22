@@ -27,7 +27,7 @@ main:
 	move 		$s0, 		$v0
 
 	li 			$s1, 		1		#counter increment
-	l.d 		$f4, 		helper 	#storing the value that will help in division
+	l.d 		$f8, 		helper 	#storing the value that will help in division
 	lw 			$s2, 		area
 	l.d 		$f0, 		areaf 	#total area in double
 	li			$s3,		1		#temporary variable to check for single or less than 1 points
@@ -47,9 +47,6 @@ main:
 	syscall
 	move 		$t9, 		$v0
 
-
-#To do: Account for negative numbers  (formula for one negative one positive (x2-x1)(y1^2+y2^2)/2(|y1|+|y2|))- rest all cases have been taken care of	(no. of points <2, both points positive, both points negative)
-
 	calculation:
 
 
@@ -65,22 +62,49 @@ main:
 		sub 		$t2, 		$t0, 		$t8			#storing the value of x2-x1 in an integer register
 		mtc1.d 		$t2, 		$f2						#storing the value of the x2-x1 in a floating point register
 		cvt.d.w 	$f2,		$f2
-		div.d 		$f2, 		$f2, 		$f4 		#storing the value of x2-x2/2 in a float
+		div.d 		$f2, 		$f2, 		$f8 		#storing the value of x2-x2/2 in a float
 
-		abs 		$t1, 		$t1
-		abs			$t9,	 	$t9
-		add			$t3, 		$t1, 		$t9			#storing y1+y2
-		mtc1.d 		$t3, 		$f4						#storing y1+y2 in floating point register
-		cvt.d.w 	$f4, 		$f4		
-		mul.d 		$f2, 		$f2, 		$f4 		#storing the final value
+		mul 		$t6, 		$t1,	 	$t9			#checking if the values of the coordinates are opposite
+		bltz		$t6, 		negative				#changing the branch to account for values with opp signs
+		bgez 		$t6, 		positive
 
-		add 		$s1, 		$s1,		1			#increasing the counter
-		add.d 		$f0, 		$f0, 		$f2 		#adding this value to the total sum
+		negative:
+			abs			$t6, 		$t1
+			abs 		$t9, 		$t9
+			add 		$t4, 		$t6, 		$t9			#storing the value of y1+y2 after taking absolute
+			mtc1.d 		$t4, 		$f4
+			cvt.d.w 	$f4, 		$f4
 
-		move		$t8, 		$t0						#storing the value of the point in this loop in t8, t9
-		move		$t9, 		$t1
+
+			mul			$s4,		$t6,		$t6			#y1^2
+			mul			$t9, 		$t9,		$t9			#y2^2
+			add 		$t4, 		$s4,	 	$t9			#y1^2+y2^2
+			mtc1.d 		$t4, 		$f6
+			cvt.d.w 	$f6, 		$f6
+			div.d 		$f4, 		$f6, 		$f4
+
+			j 			extras
+
+
+		positive:
+
 		
-		blt 		$s1, 		$s0, 		calculation #looping back into the code
+			abs 		$t6, 		$t1
+			abs			$t9,	 	$t9
+			add			$t4, 		$t6, 		$t9			#storing y1+y2
+			mtc1.d 		$t4, 		$f4						#storing y1+y2 in floating point register
+			cvt.d.w 	$f4, 		$f4		
+
+
+		extras:	
+			mul.d 		$f2, 		$f2, 		$f4 		#storing the final value
+			add 		$s1, 		$s1,		1			#increasing the counter
+			add.d 		$f0, 		$f0, 		$f2 		#adding this value to the total sum
+
+			move		$t8, 		$t0						#storing the value of the point in this loop in t8, t9
+			move		$t9, 		$t1
+			
+			blt 		$s1, 		$s0, 		calculation #looping back into the code
 
 	.end calculation
 
