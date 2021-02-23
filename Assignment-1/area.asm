@@ -55,10 +55,10 @@ main:
 	li 			$s1, 		1
 
 	# Storing some values in registers
-	l.d 		$f8, 		twoPointZero # Storing 2.0 to use later in float calculations
-	lw 			$s2, 		area		# Total area in word
-	l.d 		$f0, 		areaf 	# Total area in double
-	li			$s3,		1		# Temporary variable assigned value 1 to check for single
+	l.d 		$f8, 		twoPointZero 		# Storing 2.0 to use later in float calculations
+	lw 			$s2, 		area						# Total area in word
+	l.d 		$f0, 		areaf 					# Total area in double
+	li			$s3,		1								# Temporary variable assigned value 1 to check for single
 
 	# Checking if the number of pts is 1 or 0
 	# If yes, go to single; else continue
@@ -97,7 +97,7 @@ main:
 		sub 			$t2, 		$t0, 		$t8			# Storing the value of x2-x1 in an integer register
 		mtc1.d 		$t2, 		$f2							# Storing the value of the x2-x1 in a floating point register
 		cvt.d.w 	$f2,		$f2
-		div.d 		$f2, 		$f2, 		$f8 		# Storing the value of x2-x2/2 in a float
+		div.d 		$f2, 		$f2, 		$f8 		# Storing the value of x2-x2/2 in a floating point register
 
 		# Checking if the signs of continuous y coordinates entered are opposite
 		mul 		$t6, 		$t1,	 	$t9				# Multiplying both y coordinates
