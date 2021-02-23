@@ -9,12 +9,11 @@
 
 	Input: 		.asciiz 	"Enter the coordinates of points after pressing enter each time: "
 	Output: 	.asciiz		"The total area is: "
-	exceedInt:	.asciiz "Please enter value of coordinate less than 2147483000. \n"
 	areaf: 		.double 	0.0
 	area: 		.word 		0
 	total:		.word	 		0
 	twoPointZero: 	.double 	2.0
-	intMax: 	.word 		2147483000
+
 
 # ----------------------------------------------------------------------------
 	# Regsiters used for:
@@ -61,7 +60,6 @@ main:
 	lw 			$s2, 		area						# Total area in word
 	l.d 		$f0, 		areaf 					# Total area in double
 	li			$s3,		1								# Temporary variable assigned value 1 to check for single
-	lw 			$s4, 	intMax						# Max value of int to compare x1, x2, y1 and y2
 
 	# Checking if the number of pts is 1 or 0
 	# If yes, go to single; else continue
@@ -77,14 +75,13 @@ main:
 	syscall
 	move 		$t8, 		$v0
 
-	bge			$t8, 		$s4,		exceededIntValue
 
 	# Storing the first point y coordinate
 	li 			$v0, 		5
 	syscall
 	move 		$t9, 		$v0
 
-	bge 		$t9, 		$s4,		exceededIntValue
+
 
 # ----------------------------------------------------------------------------
 # Loop for calculation
@@ -95,14 +92,13 @@ main:
 		syscall
 		move 		$t0, 		$v0
 
-		bge 		$t0, 		$s4,		exceededIntValue
 
 		# Storing subsequent y coordinates (except first) using loop
 		li 			$v0, 		5
 		syscall
 		move 		$t1, 		$v0
 
-		bge 		$t1, 		$s4,		exceededIntValue
+
 
 		# Storing x2-x1/2 in f2
 		sub 			$t2, 		$t0, 		$t8			# Storing the value of x2-x1 in an integer register
@@ -185,11 +181,7 @@ main:
 	single:
 	.end single
 
-	exceededIntValue:
-		la 			$a0, 		exceedInt
-		li			$v0, 		4
-		syscall
-		.end exceededIntValue
+
 # ----------------------------------------------------------------------------
 
 	# Storing value in f0 to areaf to print.
