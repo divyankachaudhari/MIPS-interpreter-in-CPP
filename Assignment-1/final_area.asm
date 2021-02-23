@@ -101,6 +101,9 @@ main:
 		cvt.d.w 	$f2,		$f2
 		div.d 		$f2, 		$f2, 		$f8 		# Storing the value of x2-x2/2 in a floating point register
 
+		beqz		$t1,		positive
+		beqz		$t9, 		positive
+		
 		# Checking if the signs of continuous y coordinates entered are opposite
 		abs 		$s6, 		$t1
 		abs 		$s7, 		$t9
