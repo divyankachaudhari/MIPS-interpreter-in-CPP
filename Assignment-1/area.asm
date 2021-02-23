@@ -1,120 +1,189 @@
-.data
-	
-	Intro: 		.ascii 		"Enter the values here\n"
-				.asciiz 	"The no. of points: "
+# One thing I'm not sure of is how to directly divide floats without
+# initialising new variables, that is why I have made extra variables
 
-	Input: 		.asciiz 	"Enter the coordinates of points after pressing enter each time : "
+# ----------------------------------------------------------------------------
+.data
+
+	Intro: 		.ascii 		"Enter the values here\n"
+						.asciiz 	"The no. of points: "
+
+	Input: 		.asciiz 	"Enter the coordinates of points after pressing enter each time: "
+	Output: 	.asciiz		"The total area is: "
 	areaf: 		.double 	0.0
 	area: 		.word 		0
-	total:		.word	 	0
-	helper: 	.double 	2.0	
+	total:		.word	 		0
+	twoPointZero: 	.double 	2.0
 
-#One thing I'm not sure of is how to directly divide floats without initialising new variables, that 
-#is why I have made extra variables
+# ----------------------------------------------------------------------------
+	# Regsiters used for:
+	# f0: double areaf
+	# f2: x2-x1 --> x2-x1/2 (x part of area)
+	# f4: [(y1)^2+(y2)^2]/(|y1| + |y2|) or |y1| + |y2| (y part of area)
+	# f8: twoPointZero
+	#----------------
+	# t8: First x coordinate
+	# t0: Second x coordinate
+	# t9: First y coordinate --> its absolute value
+	# t1: Second y coordinate
+	# t6: absolute value of t1
+	#----------------
+	# s0: Number of points
+	# s1: Index/Counter for loop
+	# s2: area (NO NEED OF THIS; ask and delete)
+	# s3: Initiliased to 1 for help
+
+# ----------------------------------------------------------------------------
 
 .text
 .globl main
 .ent main
 main:
-	
-	la 			$a0, 		Intro 	#printing the initial string
+	# Print the first string Intro
+	la 			$a0, 		Intro
 	li			$v0, 		4
 	syscall
 
-	li 			$v0, 		5 		#storing the total number of points	in s0
+	# Taking user's input of the number of coordinates
+	li 			$v0, 		5
 	syscall
+
+	# Storing the input in s0 and copying to total
 	sw 			$v0, 		total
 	move 		$s0, 		$v0
 
-	li 			$s1, 		1		#counter increment
-	l.d 		$f8, 		helper 	#storing the value that will help in division
-	lw 			$s2, 		area
-	l.d 		$f0, 		areaf 	#total area in double
-	li			$s3,		1		#temporary variable to check for single or less than 1 points
+	# s1 will act as our counter for loop, initialising with 1
+	li 			$s1, 		1
 
-	ble 		$s0,		$s3, 		single	#cheking if the no. of points is 1
+	# Storing some values in registers
+	l.d 		$f8, 		twoPointZero # Storing 2.0 to use later in float calculations
+	lw 			$s2, 		area		# Total area in word
+	l.d 		$f0, 		areaf 	# Total area in double
+	li			$s3,		1		# Temporary variable assigned value 1 to check for single
 
+	# Checking if the number of pts is 1 or 0
+	# If yes, go to single; else continue
+	ble 		$s0,		$s3, 		single
 
-	la 			$a0, 		Input 	#printing the prompt string
+	# Printing the prompt string to get coordinate values
+	la 			$a0, 		Input
 	li			$v0, 		4
 	syscall
 
-	li 			$v0, 		5 		#storing the first point x coordinate
+	# Storing the first point x coordinate
+	li 			$v0, 		5
 	syscall
-	move 		$t8, 		$v0 
+	move 		$t8, 		$v0
 
-	li 			$v0, 		5		#storing the first point y coordinate
+	# Storing the first point y coordinate
+	li 			$v0, 		5
 	syscall
 	move 		$t9, 		$v0
 
+# ----------------------------------------------------------------------------
+# Loop for calculation
 	calculation:
 
-
-		li 			$v0, 		5						#storing the x coordinate of the next point in the loop
-		syscall		
-		move 		$t0, 		$v0					
-
-		li 			$v0, 		5						#storing the y coordinate of the next point in the loop
+		# Storing subsequent x coordinates (except first) using loop
+		li 			$v0, 		5
 		syscall
-		move 		$t1, 		$v0					
+		move 		$t0, 		$v0
 
-		sub 		$t2, 		$t0, 		$t8			#storing the value of x2-x1 in an integer register
-		mtc1.d 		$t2, 		$f2						#storing the value of the x2-x1 in a floating point register
+		# Storing subsequent y coordinates (except first) using loop
+		li 			$v0, 		5
+		syscall
+		move 		$t1, 		$v0
+
+		# Storing x2-x1/2 in f2
+		sub 			$t2, 		$t0, 		$t8			# Storing the value of x2-x1 in an integer register
+		mtc1.d 		$t2, 		$f2							# Storing the value of the x2-x1 in a floating point register
 		cvt.d.w 	$f2,		$f2
-		div.d 		$f2, 		$f2, 		$f8 		#storing the value of x2-x2/2 in a float
+		div.d 		$f2, 		$f2, 		$f8 		# Storing the value of x2-x2/2 in a float
 
-		mul 		$t6, 		$t1,	 	$t9			#checking if the values of the coordinates are opposite
-		bltz		$t6, 		negative				#changing the branch to account for values with opp signs
-		bgez 		$t6, 		positive
+		# Checking if the signs of continuous y coordinates entered are opposite
+		mul 		$t6, 		$t1,	 	$t9				# Multiplying both y coordinates
 
+		# Changing to positive or negative branch on basis of multiplication
+		bltz		$t6, 		negative					# Opposite signs
+		bgez 		$t6, 		positive					# Same signs
+
+# NEGATIVE-------
 		negative:
-			abs			$t6, 		$t1
-			abs 		$t9, 		$t9
-			add 		$t4, 		$t6, 		$t9			#storing the value of y1+y2 after taking absolute
+			# Making both y coordinates absolute
+			abs				$t6, 		$t1
+			abs 			$t9, 		$t9
+
+			# Obtaining |y1| + |y2| and storing in f4.
+			add 			$t4, 		$t6, 		$t9
 			mtc1.d 		$t4, 		$f4
 			cvt.d.w 	$f4, 		$f4
 
-			mul			$s4,		$t6,		$t6			#y1^2
-			mul			$t9, 		$t9,		$t9			#y2^2
-			add 		$t4, 		$s4,	 	$t9			#y1^2+y2^2
+			# Obtaining (y1)^2, (y2)^2 and (y1)^2+(y2)^2. Storing in f6.
+			mul				$s4,		$t6,		$t6			# y1^2
+			mul				$t9, 		$t9,		$t9			# y2^2
+			add 			$t4, 		$s4,	 	$t9			# y1^2+y2^2
 			mtc1.d 		$t4, 		$f6
 			cvt.d.w 	$f6, 		$f6
+
+			# Obtaining [(y1)^2+(y2)^2]/(|y1| + |y2|). Storing in f4.
 			div.d 		$f4, 		$f6, 		$f4
 
 			j 			extras
 
+# POSITIVE-------
 		positive:
-		
-			abs 		$t6, 		$t1
-			abs			$t9,	 	$t9
-			add			$t4, 		$t6, 		$t9			#storing y1+y2
-			mtc1.d 		$t4, 		$f4						#storing y1+y2 in floating point register
-			cvt.d.w 	$f4, 		$f4		
+			# Making both y coordinates absolute
+			abs 			$t6, 		$t1
+			abs				$t9,	 	$t9
 
-		extras:	
-			mul.d 		$f2, 		$f2, 		$f4 		#storing the final value
-			add 		$s1, 		$s1,		1			#increasing the counter
-			add.d 		$f0, 		$f0, 		$f2 		#adding this value to the total sum
+			# Obtaining |y1| + |y2| and storing in f4.
+			add				$t4, 		$t6, 		$t9
+			mtc1.d 		$t4, 		$f4
+			cvt.d.w 	$f4, 		$f4
 
-			move		$t8, 		$t0						#storing the value of the point in this loop in t8, t9
-			move		$t9, 		$t1
-			
-			blt 		$s1, 		$s0, 		calculation #looping back into the code
+# EXTRAS--------
+		extras:
+			# In f2, we had (x2-x1)/2. Multipying that with either
+			# [(y1)^2+(y2)^2]/(|y1| + |y2|) or |y1| + |y2|
+			# depending on our branch. Storing in f2.
+			mul.d 		$f2, 		$f2, 		$f4
+
+			# Increasing our loop counter in s1.
+			add 			$s1, 		$s1,		1
+
+			# Adding our area obtained with 2 points (in f2) to previous total area (in f0).
+			add.d 		$f0, 		$f0, 		$f2
+
+			# We will now shift our second set of coordinates (t0, t1) into first set registers (t8, t9)
+			# Then, we will input new set of coordinates (in t0, t1) by loop to calculate area and add.
+			move			$t8, 		$t0
+			move			$t9, 		$t1
+
+			# Looping back
+			blt 		$s1, 		$s0, 		calculation
 
 	.end calculation
+# ----------------------------------------------------------------------------
 
+# Ouput 0 if the number of points is 1 or 0.
 	single:
 	.end single
 
-		
-	s.d 		$f0, 		areaf			#storing value into variable for printing
-	l.d 		$f12,		areaf			#printing the final double value
-	li 			$v0, 		3		
+# ----------------------------------------------------------------------------
+
+	# Storing value in f0 to areaf to print.
+	s.d 		$f0, 		areaf
+
+	# Printing the final double value of area.
+	la 			$a0, 		Output
+	li			$v0, 		4
+	syscall
+	l.d 		$f12,		areaf
+	li 			$v0, 		3
 	syscall
 	jr	$ra
 
+# ----------------------------------------------------------------------------
 
-
-
-
-
+	li $v0, 10 			# Terminate
+	syscall 				# System call
+.end main
