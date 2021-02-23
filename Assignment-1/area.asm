@@ -126,18 +126,18 @@ main:
 			abs 			$t9, 		$t9
 
 			# Obtaining |y1| + |y2| and storing in f4.
-			mtc1.d 		$t6, 		$f12
+			mtc1.d 		$t6, 		$f16
 			mtc1.d		$t9,		$f14
-			add.d			$f4, 		$f12, 		$f14
+			add.d			$f4, 		$f16, 		$f14
 			# mtc1.d 		$t4, 		$f4
 			# cvt.d.w 	$f4, 		$f4
 
 
 			# Obtaining (y1)^2, (y2)^2 and (y1)^2+(y2)^2. Storing in f6.
 
-			mul.d			$f12,		$f12,		$f12			# y1^2
+			mul.d			$f16,		$f16,		$f16			# y1^2
 			mul.d			$f14, 		$f14,		$f14			# y2^2
-			add.d			$f6, 		$f12,	 	$f14			# y1^2+y2^2
+			add.d			$f6, 		$f16,	 	$f14			# y1^2+y2^2
 			# mtc1.d 		$t4, 		$f6
 			# cvt.d.w 	$f6, 		$f6
 
@@ -153,9 +153,9 @@ main:
 			abs				$t9,	 	$t9
 
 			# Obtaining |y1| + |y2| and storing in f4.
-			mtc1.d 		$t6, 		$f12
+			mtc1.d 		$t6, 		$f16
 			mtc1.d		$t9,		$f14
-			add.d			$f4, 		$f12, 		$f14
+			add.d			$f4, 		$f16, 		$f14
 
 # EXTRAS--------
 		extras:
