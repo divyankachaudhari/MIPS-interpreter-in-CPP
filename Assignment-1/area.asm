@@ -76,7 +76,10 @@ main:
 	move 		$t8, 		$v0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 
 >>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 	# Storing the first point y coordinate
@@ -85,7 +88,10 @@ main:
 	move 		$t9, 		$v0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 
 
 >>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
@@ -99,7 +105,10 @@ main:
 		move 		$t0, 		$v0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 
 >>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 		# Storing subsequent y coordinates (except first) using loop
@@ -108,7 +117,10 @@ main:
 		move 		$t1, 		$v0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 
 
 >>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
@@ -196,6 +208,10 @@ main:
 	.end single
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 =======
 
 >>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
