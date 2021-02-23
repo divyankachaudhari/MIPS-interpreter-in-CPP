@@ -7,13 +7,13 @@
 	Intro: 		.ascii 		"Enter the values here\n"
 						.asciiz 	"The no. of points: "
 
-	Input: 		.asciiz 	"Enter the coordinates of points after pressing enter each time and less than 2147483000: "
+	Input: 		.ascii 	"Enter the coordinates of points after pressing enter each time."
+            .asciiz "Please enter values such that sum of any consecutive x or y coordinates is less than 2 billion: "
 	Output: 	.asciiz		"The total area is: "
 	areaf: 		.double 	0.0
 	area: 		.word 		0
 	total:		.word	 		0
 	twoPointZero: 	.double 	2.0
-
 
 # ----------------------------------------------------------------------------
 	# Regsiters used for:
@@ -32,7 +32,7 @@
 	# s1: Index/Counter for loop
 	# s2: area (NO NEED OF THIS; ask and delete)
 	# s3: Initiliased to 1 for help
-	# s4: intMax
+
 # ----------------------------------------------------------------------------
 
 .text
@@ -75,20 +75,11 @@ main:
 	syscall
 	move 		$t8, 		$v0
 
-<<<<<<< HEAD
-=======
-
->>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 	# Storing the first point y coordinate
 	li 			$v0, 		5
 	syscall
 	move 		$t9, 		$v0
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 # ----------------------------------------------------------------------------
 # Loop for calculation
 	calculation:
@@ -98,20 +89,11 @@ main:
 		syscall
 		move 		$t0, 		$v0
 
-<<<<<<< HEAD
-=======
-
->>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 		# Storing subsequent y coordinates (except first) using loop
 		li 			$v0, 		5
 		syscall
 		move 		$t1, 		$v0
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 		# Storing x2-x1/2 in f2
 		sub 			$t2, 		$t0, 		$t8			# Storing the value of x2-x1 in an integer register
 		mtc1.d 		$t2, 		$f2							# Storing the value of the x2-x1 in a floating point register
@@ -119,15 +101,13 @@ main:
 		div.d 		$f2, 		$f2, 		$f8 		# Storing the value of x2-x2/2 in a floating point register
 
 		# Checking if the signs of continuous y coordinates entered are opposite
-		abs 		$s6, 		$t1
-		abs 		$s7, 		$t9
-		div 		$s6,		$t1, 		$s6				# Getting sign of second y
-		div 		$s7, 		$t9, 		$s7				# Getting sign of first y
-		mul 		$s5, 		$s6,	 	$s7				# Multiplying signs both y coordinates
+		div 		$t5,		$t1, 		$t1				# Getting sign of second y
+		div 		$t3, 		$t9, 		$t9				# Getting sign of first y
+		mul 		$t6, 		$t5,	 	$t3				# Multiplying signs both y coordinates
 
 		# Changing to positive or negative branch on basis of multiplied sign
-		bltz		$s5, 		negative					# Opposite signs
-		bgez 		$s5, 		positive					# Same signs
+		bltz		$t6, 		negative					# Opposite signs
+		bgez 		$t6, 		positive					# Same signs
 
 # NEGATIVE-------
 		negative:
@@ -136,18 +116,16 @@ main:
 			abs 			$t9, 		$t9
 
 			# Obtaining |y1| + |y2| and storing in f4.
-			mtc1.d 		$t6, 		$f16
-			mtc1.d		$t9,		$f14
-			cvt.d.w 	$f14, 		$f14
-			cvt.d.w 	$f16, 		$f16
-			add.d		$f4, 		$f16, 		$f14
-
+			add 			$t4, 		$t6, 		$t9
+			mtc1.d 		$t4, 		$f4
+			cvt.d.w 	$f4, 		$f4
 
 			# Obtaining (y1)^2, (y2)^2 and (y1)^2+(y2)^2. Storing in f6.
-
-			mul.d			$f16,		$f16,		$f16			# y1^2
-			mul.d			$f14, 		$f14,		$f14			# y2^2
-			add.d			$f6, 		$f16,	 	$f14			# y1^2+y2^2
+			mul				$s4,		$t6,		$t6			# y1^2
+			mul				$t9, 		$t9,		$t9			# y2^2
+			add 			$t4, 		$s4,	 	$t9			# y1^2+y2^2
+			mtc1.d 		$t4, 		$f6
+			cvt.d.w 	$f6, 		$f6
 
 			# Obtaining [(y1)^2+(y2)^2]/(|y1| + |y2|). Storing in f4.
 			div.d 		$f4, 		$f6, 		$f4
@@ -161,11 +139,9 @@ main:
 			abs				$t9,	 	$t9
 
 			# Obtaining |y1| + |y2| and storing in f4.
-			mtc1.d 		$t6, 		$f16
-			mtc1.d		$t9,		$f14
-			cvt.d.w 	$f14, 		$f14
-			cvt.d.w 	$f16, 		$f16
-			add.d		$f4, 		$f16, 		$f14
+			add				$t4, 		$t6, 		$t9
+			mtc1.d 		$t4, 		$f4
+			cvt.d.w 	$f4, 		$f4
 
 # EXTRAS--------
 		extras:
@@ -195,10 +171,6 @@ main:
 	single:
 	.end single
 
-<<<<<<< HEAD
-=======
-
->>>>>>> de6c9b77e37d090550fd4561c2aaa81e430363e0
 # ----------------------------------------------------------------------------
 
 	# Storing value in f0 to areaf to print.
@@ -216,5 +188,5 @@ main:
 # ----------------------------------------------------------------------------
 
 	li $v0, 10 			# Terminate
-	syscall 			# System call
+	syscall 				# System call
 .end main
