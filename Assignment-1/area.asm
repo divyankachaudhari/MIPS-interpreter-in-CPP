@@ -9,7 +9,7 @@
 
 	Input: 		.asciiz 	"Enter the coordinates of points after pressing enter each time: "
 	Output: 	.asciiz		"The total area is: "
-	exceedInt:	.asciiz "Please enter value of coordinate less than 2147483000"
+	exceedInt:	.asciiz "Please enter value of coordinate less than 2147483000. \n"
 	areaf: 		.double 	0.0
 	area: 		.word 		0
 	total:		.word	 		0
