@@ -100,9 +100,11 @@ main:
 		div.d 		$f2, 		$f2, 		$f8 		# Storing the value of x2-x2/2 in a floating point register
 
 		# Checking if the signs of continuous y coordinates entered are opposite
-		mul 		$t6, 		$t1,	 	$t9				# Multiplying both y coordinates
+		div 		$t5,		$t1, 		$t1				# Getting sign of second y
+		div 		$t3, 		$t9, 		$t9				# Getting sign of first y
+		mul 		$t6, 		$t5,	 	$t3				# Multiplying signs both y coordinates
 
-		# Changing to positive or negative branch on basis of multiplication
+		# Changing to positive or negative branch on basis of multiplied sign
 		bltz		$t6, 		negative					# Opposite signs
 		bgez 		$t6, 		positive					# Same signs
 
