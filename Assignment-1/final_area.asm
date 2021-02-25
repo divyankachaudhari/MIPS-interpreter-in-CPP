@@ -103,7 +103,7 @@ main:
 
 		beqz		$t1,		positive
 		beqz		$t9, 		positive
-		
+
 		# Checking if the signs of continuous y coordinates entered are opposite
 		abs 		$s6, 		$t1
 		abs 		$s7, 		$t9
