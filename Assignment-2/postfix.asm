@@ -175,8 +175,8 @@ end:
   sw $s1, result
 
   la 			$a0, 		OutputPrompt
-	li			$v0, 		4
-	syscall
+  li			$v0, 		4
+  syscall
   lw      $s7, result
   li      $v0, 3
   syscall
