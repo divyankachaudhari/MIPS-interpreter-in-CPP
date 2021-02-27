@@ -26,6 +26,11 @@
 #| $s6: Storage of popped number2 during operation
 #| $s7: Storing of final result after popping to output.
 
+#| Doubts:
+#|  1. Int is 4 bytes and char is 1 byte. So, while updating address of string I add 1 byte to it.
+#|   But, to update stack of integers, I add 4 bytes to it. Don't know if any errors could be caused.
+#|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~;
+
 
 # -----------------------------------------------------------------------------
 #| Data declarations
@@ -92,6 +97,7 @@ pushLoop:
   #| Continuing...
   #| Converting the ASCII char loaded in $t0 to int.
   #| From: https://stackoverflow.com/questions/15940331/convert-string-of-ascii-digits-to-int-in-mips-assembler
+  #| Please check if this is the only step required, from answer 1 in given link
   andi $t0, $t0, 0x0F
 
   #| Pushing it into our stack since int is 4 bytes
