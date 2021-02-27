@@ -88,10 +88,10 @@ pushLoop:
 
   #| Check if the char is an operator, if yes jump to that. If no, continue.
   beq $t0, $s2, addition # '+'
-	nop
-	beq $t0, $s3, subtract # '-'
-	nop
-	beq $t0, $s4, multiply # '*'
+  nop
+  beq $t0, $s3, subtract # '-'
+  nop
+  beq $t0, $s4, multiply # '*'
   nop
 
   #| Continuing...
