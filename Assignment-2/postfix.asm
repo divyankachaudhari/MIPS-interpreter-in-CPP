@@ -3,6 +3,12 @@
 #| Output: Print the result of the expression.
 
 
+#| Read about:
+#| 1. Inputting and printing string from the book.
+#| 2. Stack from book.
+#| 3. Converting ASCII char to int.
+
+
 #| Method:
 #| 1. Read string inputted.
 #| 2. Start looping through each char:
@@ -39,9 +45,7 @@ OutputPrompt: .asciiz "The result is: "
 userAns:      .space   256
 length:       .word    256
 result:       .word    0
-# -----------------------------------------------------------------------------
-#| Registers being used for:
-#|
+
 # -----------------------------------------------------------------------------
 #| Code
 
