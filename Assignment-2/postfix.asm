@@ -7,7 +7,7 @@
 #| 1. Read string inputted.
 #| 2. Start looping through each char:
 #|    (a) If the char is operator -> pop 2 numbers from stack and operate -> push the result into stack
-#|    (b) If the char is NOT operator (number) -> convert to int -> push into stack
+#|    (b) If the char is NOT operator (is a number) -> convert to int -> push into stack
 #| 3. Loop until the end of string (here length = 256 (I decided this, can change)).
 #| 4. In the end, only result will be left in the stack. Pop and output it.
 
