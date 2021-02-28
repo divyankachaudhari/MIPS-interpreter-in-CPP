@@ -35,6 +35,7 @@
 #|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~;
 # -----------------------------------------------------------------------------
 #| Data declarations
+.data 
 InputPrompt:  .asciiz "Please enter the expression: "
 OutputPrompt: .asciiz "The result is: "
 userAns:      .space   256
@@ -67,7 +68,7 @@ main:
   #| Size of one char is one byte.
   #| Pushing the elements of string into a stack in 2 steps:
   #|  1. Converting the ASCII char to int.
-  #|  2. Pushing the int to out stack. Loop.
+  #|  2. Pushing the int to our stack. Loop.
 
   #| $t1 will act as counter for loop until it's equal to $t2.
   li $t1, 0
