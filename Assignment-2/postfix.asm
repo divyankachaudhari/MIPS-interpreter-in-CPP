@@ -1,14 +1,12 @@
-#| Input: Postfix expression with constant integer operands in the range 0­9 and
+#| Input: Postfix expression with constant integer operands in the range 0-­9 and
 #| operators +, -,and *.
 #| Output: Print the result of the expression.
-
-
+#-------------------------------------------------------------------------------
 #| Read about:
 #| 1. Inputting and printing string from the book.
 #| 2. Stack from book.
 #| 3. Converting ASCII char to int.
-
-
+#-------------------------------------------------------------------------------
 #| Method:
 #| 1. Read string inputted.
 #| 2. Start looping through each char:
@@ -16,8 +14,7 @@
 #|    (b) If the char is NOT operator (is a number) -> convert to int -> push into stack
 #| 3. Loop until the end of string (here length = 256 (I decided this, can change)).
 #| 4. In the end, only result will be left in the stack. Pop and output it.
-
-
+#-------------------------------------------------------------------------------
 #| Register usage:
 #| $a0: Start address of the string
 #| $a1: Address pointer for string (to read char)
@@ -31,13 +28,11 @@
 #| $s5: Storage of popped number1 during operation
 #| $s6: Storage of popped number2 during operation
 #| $s7: Storing of final result after popping to output.
-
+#-------------------------------------------------------------------------------
 #| Doubts:
 #|  1. Int is 4 bytes and char is 1 byte. So, while updating address of string I add 1 byte to it.
 #|   But, to update stack of integers, I add 4 bytes to it. Don't know if any errors could be caused.
 #|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~;
-
-
 # -----------------------------------------------------------------------------
 #| Data declarations
 InputPrompt:  .asciiz "Please enter the expression: "
@@ -52,6 +47,7 @@ result:       .word    0
 .text
 .globl main
 .ent main
+#-----------
 main:
 
   #| Printing the initial prompt to take input
@@ -123,12 +119,15 @@ pushLoop:
 #--------
 addition:
 
+  #| Pop the last 2 numbers from the stack
   lw $s5, ($sp)
   lw $s6, 4($sp)
   addu $sp, $sp, 8
 
+  #| Operate on those 2 numbers and store temporarily in $s1
   add $s1, $s5, $s6
 
+  #| Push the result back into stack
   subu $sp, $sp, 4
   sw   $s1, ($sp)
 
@@ -140,12 +139,15 @@ addition:
 
 #---------
 subtract:
+  #| Pop the last 2 numbers from the stack
   lw    $s5, ($sp)
   lw    $s6, 4($sp)
   addu  $sp, $sp, 8
 
+  #| Operate on those 2 numbers and store temporarily in $s1
   sub $s1, $s5, $s6
 
+  #| Push the result back into stack
   subu $sp, $sp, 4
   sw   $s1, ($sp)
 
@@ -157,12 +159,15 @@ subtract:
 
 #---------
 multiply:
+  #| Pop the last 2 numbers from the stack
   lw $s5, ($sp)
   lw $s6, 4($sp)
   addu $sp, $sp, 8
 
+  #| Operate on those 2 numbers and store temporarily in $s1
   mul $s1, $s5, $s6
 
+  #| Push the result back into stack
   subu $sp, $sp, 4
   sw   $s1, ($sp)
 
@@ -178,6 +183,7 @@ end:
   #| Storing value in result to print
   sw $s1, result
 
+  #| Printing OutputPrompt and result
   la 			$a0, 		OutputPrompt
   li			$v0, 		4
   syscall
