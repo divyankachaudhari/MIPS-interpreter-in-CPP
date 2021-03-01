@@ -21,6 +21,8 @@
 #| $t1: Counter for loop (i)
 #| $t0: Temporary storage of each char read from string
 #| $t2: Size of the string (fixed here, 256)
+#| $t3: Stores the total number of integers in the input string
+#| $t4: Stores the total number of operators in the input string
 #| $s1: Temporary storage of result after each operation to push into stack
 #| $s2: '+' (For comparison in STEP 2 in method above)
 #| $s3: '-'
@@ -68,6 +70,13 @@ main:
   #| Remember, the first address of our string is stored at $a0. Copying to $a1 for loop.
   la $a1, userAns
 
+  #| To check for errors in the postfix expression
+  #| Checks the number of integers
+  li $t3, 0
+
+  #| Checks the number of characters initialised to 1 so that direct compare
+  li $t4, 1
+
   #| Size of one char is one byte.
   #| Pushing the elements of string into a stack in 2 steps:
   #|  1. Converting the ASCII char to int.
@@ -90,11 +99,6 @@ pushLoop:
   #| Loading the the first char byte in $t0
   lb $t0, ($a1)
 
-  #sw      $t0, checker
-  #lw      $a0, checker
-  #li      $v0, 1
-  #syscall
-
   #| Check if the char is an operator, if yes jump to that. If no, continue.
   beq $t0, $s2, addition # '+'
   #nop
@@ -109,6 +113,8 @@ pushLoop:
   #| Please check if this is the only step required, from answer 1 in given link
   add $t0, $t0, -48
 
+  #|Incrementing the no. of integers counter
+  add $t3, $t3, 1
 
   #| Pushing it into our stack since int is 4 bytes
   subu $sp, $sp, 4
@@ -124,7 +130,7 @@ pushLoop:
   blt $t1, $t2, pushLoop
 
   #| Else jump to end
-  j end
+  j ending
 
 #--------
 addition:
@@ -133,6 +139,9 @@ addition:
   lw $s5, ($sp)
   lw $s6, 4($sp)
   addu $sp, $sp, 8
+
+  #| Incrementing the number of operators
+  add $t4, $t4, 1
 
   #| Operate on those 2 numbers and store temporarily in $s1
   add $s1, $s5, $s6
@@ -154,7 +163,7 @@ addition:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
-  j end
+  j ending
 
 #---------
 subtract:
@@ -162,6 +171,9 @@ subtract:
   lw    $s5, ($sp)
   lw    $s6, 4($sp)
   addu  $sp, $sp, 8
+
+  #| Incrementing the number of operators
+  add $t4, $t4, 1
 
   #| Operate on those 2 numbers and store temporarily in $s1
   sub $s1, $s6, $s5
@@ -182,7 +194,7 @@ subtract:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
-  j end
+  j ending
 
 #---------
 multiply:
@@ -190,6 +202,9 @@ multiply:
   lw $s5, ($sp)
   lw $s6, 4($sp)
   addu $sp, $sp, 8
+
+  #| Incrementing the number of operators
+  add $t4, $t4, 1
 
   #| Operate on those 2 numbers and store temporarily in $s1
   mul $s1, $s5, $s6
@@ -212,9 +227,12 @@ multiply:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
-  j end
+  j ending
 #---------
-end:
+ending:
+  
+  bne $t3, $t4, incorrect
+
   lw $s1, ($sp)
 
   #| Storing value in result to print
@@ -228,6 +246,18 @@ end:
   li      $v0, 1
   syscall
   jr	$ra
+
+  j final
+
+.end ending
+
+incorrect:
+  la      $a0,    Invalid
+  li      $v0,    4
+  syscall
+
+final:
+.end final
 
 #------------------------------------------------------------------------------
 #| End of the Code
