@@ -11,7 +11,7 @@
 #| 1. Read string inputted.
 #| 2. Start looping through each char:
 #|    (a) If the char is operator -> pop 2 numbers from stack and operate -> push the result into stack
-#|    (b) If the char is NOT operator (is a number) -> convert to int -> push into stack
+#|    (b) If the char is NOT operaor (is a number) -> convert to int -> push into stack
 #| 3. Loop until the end of string (here length = 256 (I decided this, can change)).
 #| 4. In the end, only result will be left in the stack. Pop and output it.
 #-------------------------------------------------------------------------------
@@ -34,11 +34,11 @@
 #| Doubts:
 #|  1. Int is 4 bytes and char is 1 byte. So, while updating address of string I add 1 byte to it.
 #|   But, to update stack of integers, I add 4 bytes to it. Don't know if any errors could be caused.
-#|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~; 
+#|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~;
 
 # -----------------------------------------------------------------------------
 #| Data declarations
-.data 
+.data
 InputPrompt:  .asciiz "Please enter the expression: "
 OutputPrompt: .asciiz "The result is: "
 userAns:      .space   256
@@ -220,7 +220,7 @@ multiply:
   add $a1, $a1, 1
 
   lb $t0, ($a1)
-  
+
   beq $t0, $s2, addition # '+'
   #nop
   beq $t0, $s3, subtract # '-'
@@ -234,6 +234,7 @@ ending:
   bne $t3, $t4, incorrect
 
   lw $s1, ($sp)
+  addu $sp, $sp, 4
 
   #| Storing value in result to print
   sw $s1, result
