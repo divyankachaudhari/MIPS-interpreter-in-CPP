@@ -32,7 +32,8 @@
 #| Doubts:
 #|  1. Int is 4 bytes and char is 1 byte. So, while updating address of string I add 1 byte to it.
 #|   But, to update stack of integers, I add 4 bytes to it. Don't know if any errors could be caused.
-#|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~;
+#|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~; 
+
 # -----------------------------------------------------------------------------
 #| Data declarations
 .data
@@ -41,6 +42,8 @@ OutputPrompt: .asciiz "The result is: "
 userAns:      .space   256
 length:       .word    256
 result:       .word    0
+checker:      .word    0
+Invalid:      .asciiz  "Invalid Postfix expression"
 
 # -----------------------------------------------------------------------------
 #| Code
@@ -59,7 +62,7 @@ main:
   #| Inputting the user's string
   li $v0, 8                 # call code, read string
   la $a0, userAns           # addr, where to put chars
-  li $a1, 52                # max chars for string
+  li $a1, 256               # max chars for string
   syscall
 
   #| Remember, the first address of our string is stored at $a0. Copying to $a1 for loop.
@@ -87,19 +90,25 @@ pushLoop:
   #| Loading the the first char byte in $t0
   lb $t0, ($a1)
 
+  #sw      $t0, checker
+  #lw      $a0, checker
+  #li      $v0, 1
+  #syscall
+
   #| Check if the char is an operator, if yes jump to that. If no, continue.
   beq $t0, $s2, addition # '+'
-  nop
+  #nop
   beq $t0, $s3, subtract # '-'
-  nop
+  #nop
   beq $t0, $s4, multiply # '*'
-  nop
+  #nop
 
   #| Continuing...
   #| Converting the ASCII char loaded in $t0 to int.
   #| From: https://stackoverflow.com/questions/15940331/convert-string-of-ascii-digits-to-int-in-mips-assembler
   #| Please check if this is the only step required, from answer 1 in given link
-  andi $t0, $t0, 0x0F
+  add $t0, $t0, -48
+
 
   #| Pushing it into our stack since int is 4 bytes
   subu $sp, $sp, 4
@@ -132,10 +141,19 @@ addition:
   subu $sp, $sp, 4
   sw   $s1, ($sp)
 
+
   #| Updating loop parameters
+  add $t1, $t1, 1
   add $a1, $a1, 1
-  add $a1, $a1, 1
-  blt $t1, $t2, pushLoop
+
+  lb $t0, ($a1)
+
+  beq $t0, $s2, addition # '+'
+  #nop
+  beq $t0, $s3, subtract # '-'
+  #nop
+  beq $t0, $s4, multiply # '*'
+  #nop
   j end
 
 #---------
@@ -146,16 +164,24 @@ subtract:
   addu  $sp, $sp, 8
 
   #| Operate on those 2 numbers and store temporarily in $s1
-  sub $s1, $s5, $s6
+  sub $s1, $s6, $s5
 
   #| Push the result back into stack
   subu $sp, $sp, 4
   sw   $s1, ($sp)
 
   #| Updating loop parameters
+  add $t1, $t1, 1
   add $a1, $a1, 1
-  add $a1, $a1, 1
-  blt $t1, $t2, pushLoop
+
+  lb $t0, ($a1)
+
+  beq $t0, $s2, addition # '+'
+  #nop
+  beq $t0, $s3, subtract # '-'
+  #nop
+  beq $t0, $s4, multiply # '*'
+  #nop
   j end
 
 #---------
@@ -168,14 +194,24 @@ multiply:
   #| Operate on those 2 numbers and store temporarily in $s1
   mul $s1, $s5, $s6
 
+
   #| Push the result back into stack
   subu $sp, $sp, 4
   sw   $s1, ($sp)
 
+
   #| Updating loop parameters
+  add $t1, $t1, 1
   add $a1, $a1, 1
-  add $a1, $a1, 1
-  blt $t1, $t2, pushLoop
+
+  lb $t0, ($a1)
+  
+  beq $t0, $s2, addition # '+'
+  #nop
+  beq $t0, $s3, subtract # '-'
+  #nop
+  beq $t0, $s4, multiply # '*'
+  #nop
   j end
 #---------
 end:
@@ -189,8 +225,8 @@ end:
   la 			$a0, 		OutputPrompt
   li			$v0, 		48
   syscall
-  lw      $s7, result
-  li      $v0, 3
+  lw      $a0, result
+  li      $v0, 1
   syscall
   jr	$ra
 
