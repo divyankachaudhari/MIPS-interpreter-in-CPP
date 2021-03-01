@@ -11,7 +11,7 @@
 #| 1. Read string inputted.
 #| 2. Start looping through each char:
 #|    (a) If the char is operator -> pop 2 numbers from stack and operate -> push the result into stack
-#|    (b) If the char is NOT operator (is a number) -> convert to int -> push into stack
+#|    (b) If the char is NOT operaor (is a number) -> convert to int -> push into stack
 #| 3. Loop until the end of string (here length = 256 (I decided this, can change)).
 #| 4. In the end, only result will be left in the stack. Pop and output it.
 #-------------------------------------------------------------------------------
@@ -35,7 +35,7 @@
 #|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~;
 # -----------------------------------------------------------------------------
 #| Data declarations
-.data 
+.data
 InputPrompt:  .asciiz "Please enter the expression: "
 OutputPrompt: .asciiz "The result is: "
 userAns:      .space   256
@@ -180,13 +180,14 @@ multiply:
 #---------
 end:
   lw $s1, ($sp)
+  addu $sp, $sp, 4
 
   #| Storing value in result to print
   sw $s1, result
 
   #| Printing OutputPrompt and result
   la 			$a0, 		OutputPrompt
-  li			$v0, 		4
+  li			$v0, 		48
   syscall
   lw      $s7, result
   li      $v0, 3
