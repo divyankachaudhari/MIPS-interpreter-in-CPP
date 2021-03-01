@@ -32,7 +32,7 @@
 #| Doubts:
 #|  1. Int is 4 bytes and char is 1 byte. So, while updating address of string I add 1 byte to it.
 #|   But, to update stack of integers, I add 4 bytes to it. Don't know if any errors could be caused.
-#|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~; 
+#|  2. Can't compile due to errors idk what? Am I stupid? Maybe. Hmmmmmmm. is my method wrong? ;~;
 
 # -----------------------------------------------------------------------------
 #| Data declarations
@@ -205,7 +205,7 @@ multiply:
   add $a1, $a1, 1
 
   lb $t0, ($a1)
-  
+
   beq $t0, $s2, addition # '+'
   #nop
   beq $t0, $s3, subtract # '-'
@@ -223,7 +223,7 @@ end:
 
   #| Printing OutputPrompt and result
   la 			$a0, 		OutputPrompt
-  li			$v0, 		48
+  li			$v0, 		4
   syscall
   lw      $a0, result
   li      $v0, 1
