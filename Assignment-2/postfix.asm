@@ -23,6 +23,7 @@
 #| $t2: Size of the string (fixed here, 256)
 #| $t3: Stores the total number of integers in the input string
 #| $t4: Stores the total number of operators in the input string
+#| $t5: Helps in checking if the postfix expression is correct
 #| $s1: Temporary storage of result after each operation to push into stack
 #| $s2: '+' (For comparison in STEP 2 in method above)
 #| $s3: '-'
@@ -77,6 +78,7 @@ main:
   #| Checks the number of characters initialised to 1 so that direct compare
   li $t4, 1
 
+  li $t5, 10
   #| Size of one char is one byte.
   #| Pushing the elements of string into a stack in 2 steps:
   #|  1. Converting the ASCII char to int.
@@ -163,6 +165,7 @@ addition:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
+  bne $t0, $t5, incorrect
   j ending
 
 #---------
@@ -194,6 +197,8 @@ subtract:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
+  bne $t0, $t5, incorrect
+
   j ending
 
 #---------
@@ -227,6 +232,7 @@ multiply:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
+  bne $t0, $t5, incorrect
   j ending
 #---------
 ending:
