@@ -1,0 +1,88 @@
+\documentclass[a4paper]{article}
+\usepackage[a4paper,top=2cm,bottom=2.5cm,left=1.5cm,right=1.5cm,marginparwidth=1.75cm]{geometry}
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{listings}
+
+%% Sets page size and margins
+
+\usepackage{float}
+%% Useful packages
+\usepackage{amsmath}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+% \DeclareGraphicsExtensions{.pdf,.jpg,.png}
+
+%% defined colors
+\definecolor{Blue}{rgb}{0,0,0.5}
+\definecolor{Green}{rgb}{0,0.75,0.0}
+\definecolor{LightGray}{rgb}{0.6,0.6,0.6}
+\definecolor{DarkGray}{rgb}{0.3,0.3,0.3}
+
+\title{Assignment 2: Computer Architechture (COL216)}
+\author{
+Divyanka Chaudhari (2019CS50429)\\
+Pranay Gupta (2019CS10383)} \\
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+%\abstract{There are various types of attacks that can taken against Bluetooth devices with three mentioned briefly below. We also discuss measures that can be taken against these from the security point of view.}
+\section{Working of the MIPS code}
+
+The console first prints the initial prompt for the user to input the Postfix expression. The input string has been assigned a space of 1028 bytes which means that the user can input a postfix expression of 1026 characters at maximum. Then the input by the user is stored in the register \texttt{\$a1} . We store the characters ‘-‘, ‘+’, ‘*’ in three separate registers which will help in comparison. We have 2 registers \texttt{\$t3} and \texttt{\$t4} which store the no. of integers in the postfix expression and no. of operators in the postfix expression respectively that would help in checking validity of postfix expression.  We also have a register \texttt{\$t5} that is initialized to 10 which denotes the end of an input ASCII string.\\
+
+We then go into the pushLoop branch in which load the first character of the input string into the register \texttt{\$t0}. We then convert this ASCII character into a integer by subtracting 48 from it. We check if this is one of the operators, else we push the integer into the stack. We increment the address of the string and also increment the counter that checks the number of integers in the stack. If we it is a operator, we go into the add, subtract or multiply loop accordingly. If not one of these, then for a valid postfix expression, it must be the end of an ASCII string character which is 10. If not, then this is an invalid string and we accordingly go into the incorrect loop.
+
+We then go into the addition loop in which the addition of the top 2 elements of the stack is done and the result is pushed into the stack. We increment the counter for the number of operators and then since it is a postfix expression, we check for the next operator and go into adequate branches. Subtract and multiply work similarly.\\
+
+In the ending loop, we check that the number of integers in the stack must have been one greater than the number of operators, if not then we print “Invalid Postfix Expression”. Else, we pop the only element left in the stack which is the result of the computation.\\
+
+\newpage
+\section{Testing}
+
+
+
+\begin{enumerate}
+\item \textbf{Testcase Description:} Number of operators is greater than or equal to the number of integers\\
+3422345+-**+++\\
+7829++-*\\
+9019++-*\\
+\textbf{Output:} Invalid Postfix Expression\\
+\item  \textbf{Testcase Description:} Number of operators is less than the number of integers \\
+7980479-+*\\
+78839+*\\
+90332-+*\\
+\textbf{Output:} Invalid Postfix Expression\\
+\item \textbf{Testcase Description:} Operator in the middle of integers\\
+32+4234***+\\
+32+5*\\
+433++2*\\
+\textbf{Output:} Invalid Postfix Expression\\
+\item \textbf{Testcase Description:} There are multiple zeroes in the input string \\
+09879070-+*+-*+\\
+\textbf{Output:} (-558)\\
+\textbf{Calculator Output:} (-558)\\
+09323010*+-*+-*\\
+\textbf{Calculator Output: }0\\
+\textbf{Output:} 0\\
+\item \textbf{Testcase Description:} Random Test cases \\
+325*+\\
+\textbf{Output:} 13\\
+\textbf{Calculator Output: }13\\
+3193983+*-+**\\
+\textbf{Output: }(-261)\\
+\textbf{Calculator Output:} (-261)\\
+%282943829+**--++-\\
+\end{enumerate}
+
+
+\end{document}
