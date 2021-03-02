@@ -41,8 +41,8 @@
 .data
 InputPrompt:  .asciiz "Please enter the expression: "
 OutputPrompt: .asciiz "The result is: "
-userAns:      .space   256
-length:       .word    256
+userAns:      .space   1028
+length:       .word    1028
 result:       .word    0
 checker:      .word    0
 Invalid:      .asciiz  "Invalid Postfix expression"
@@ -64,7 +64,7 @@ main:
   #| Inputting the user's string
   li $v0, 8                 # call code, read string
   la $a0, userAns           # addr, where to put chars
-  li $a1, 256               # max chars for string
+  li $a1, 1028               # max chars for string
   syscall
 
   #| Remember, the first address of our string is stored at $a0. Copying to $a1 for loop.
