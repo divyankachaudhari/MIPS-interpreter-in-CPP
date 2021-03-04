@@ -165,7 +165,7 @@ addition:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
-  bne $t0, $t5, incorrect
+  bne $t0, $t5, pushLoop
   j ending
 
 #---------
@@ -197,7 +197,7 @@ subtract:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
-  bne $t0, $t5, incorrect
+  bne $t0, $t5, pushLoop
 
   j ending
 
@@ -232,7 +232,7 @@ multiply:
   #nop
   beq $t0, $s4, multiply # '*'
   #nop
-  bne $t0, $t5, incorrect
+  bne $t0, $t5, pushLoop
   j ending
 #---------
 ending:
