@@ -37,7 +37,6 @@ int map(string input){
 	//note that we cant use switch statement with string 
 	//in C++ because it is not a supported type by the C++ compiler
 
-	
 	if(input== "$zero"){
 		return 0;
 	}
@@ -50,7 +49,6 @@ int map(string input){
 
 //Questions:
 //How to account for comments that would exist in the code?
-//What the hell do we mean by memory in the mips system
 
 int main(){
 	//stores the current line in the input
