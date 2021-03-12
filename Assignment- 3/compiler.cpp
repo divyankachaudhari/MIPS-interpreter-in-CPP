@@ -1,17 +1,20 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>  
+#include <string>  
 #include <vector>
 #include <iomanip>
 #include <bits/stdc++.h>
 using namespace std;
+
+//The registers that we will be using are zero. r0- r31
 
 //template to convert an integer to an hexadecimal string
 template< typename T >
 string int_to_hex( T i )
 {
   stringstream stream;
-  stream << "0x" 
-         << setfill ('0') << setw(8) 
+  stream << setfill ('0') << setw(8) 
          << hex << i;
   return stream.str();
 }
@@ -22,26 +25,27 @@ vector<int> register(32, 0);
 void print_register(vector<int> a){
 	
 	for(int i=0; i< a.size(); i++){
-		cout << "R" << i << " " << int_to_hex(a[i])<<  endl;
+		cout << "r" << i << " " << int_to_hex(a[i])<<  endl;
 
 	}
 
 
 }
 
+//maps the current register to the corresponding integer
 int map(string input){
 	//note that we cant use switch statement with string 
 	//in C++ because it is not a supported type by the C++ compiler
 
-	//hardcode all the registers to the corresponding register number
+	
 	if(input== "$zero"){
 		return 0;
 	}
-	if(input== "at"){
-		return 1;
+	for(int i=0; i<31; i++){
+		if(input== ("$r" + to_string(i))){
+			return i+1;
+		}
 	}
-
-	if(input== )
 }
 
 //Questions:
@@ -54,36 +58,13 @@ int main(){
 	//would help in convering string to int
 	int numeral= 0;
 
-	//Defines what operations need to be performed on the current line
-	string current_state;
-
 	string k;
 	cin >> k;
 
 	instream myfile(k);
 	while(getline(myfile, line)){
-		if(line== ".data"){
-			//check if this if condition works because im not sure
-			//check the contents of the newlines after ignoring the tabs
-			current_state
-		}
-		else if(line== ".text"){
-
-		}
-		else if(line== ".globl main"){
-
-		}
-		else if(line== ".ent main"){
-
-		}
-		else if(line== ".main"){
-
-		}
-		else if(line== ".end main"){
-
-		}
-
-		else {continue;}
+		
+		
 
 	}
 
