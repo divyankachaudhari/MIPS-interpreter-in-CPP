@@ -76,7 +76,7 @@ int str_to_int(string s){
 //Questions:
 //How to account for comments that would exist in the code?
 //not that 8($t0) stores accesses the memory address lecated at $t0+8
-//
+
 
 int main(){
 	//stores the current line in the input
