@@ -1,10 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>  
-#include <string>  
+#include <string> 
+#include <string.h>  
 #include <vector>
 #include <iomanip>
-#include <bits/stdc++.h>
+#include <cctype>
+#include <algorithm>
 using namespace std;
 
 //The registers that we will be using are zero. r0- r31
@@ -23,8 +25,14 @@ vector<int> register(32, 0);
 //checks which instruction the code is currently running
 prog_counter= 1;
 
+//to check that the instruction set does not overflow
+memory_program= 0;
+
 //checks which memory address is being accessed for the data
 data_counter= 0;
+
+//to check that the memory set does not overflow
+memory_data= 0;
 
 //The combined size of the instruction set and the sata set is 2^20
 //bytes, so we will have to assign some fixed value to instruction
@@ -75,10 +83,33 @@ int main(){
 	string k;
 	cin >> k;
 
+	//storing all the commands in a vector
 	instream myfile(k);
 	while(getline(myfile, line)){
-		instruction_set.push_back(line);
+		if(memory_program<100000){
+			instruction_set.push_back(line);
+			memory_program+=4;
+		}
+		else{
+			cout << "Memory Overflow" <<  endl;
+			return 0;
+		}
+	}
 
+	//executing the commands, remember that we need to remove the 
+	//whitespaces
+	for(int i=0; i< instruction_set.size(); i++){
+		string s= instruction_set[i];
+		//method to remove the whitespaces
+		s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
+
+		//s now contains the current line after removing whitespace
+
+		if(s.substr(0,3)=="add"){
+			//throw syntax error if no commas
+			register[map(s.substr(3,3))]= register[map(s.substr(7,3))]+ register[map(s.substr(11,3))];
+		}
+		print_register(register);
 	}
 
 }
