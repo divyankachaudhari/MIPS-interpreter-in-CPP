@@ -21,18 +21,14 @@ string int_to_hex( T i )
   return stream.str();
 }
 
-vector<int> register(32, 0);
-//checks which instruction the code is currently running
-prog_counter= 1;
-
-//to check that the instruction set does not overflow
-memory_program= 0;
+vector<int> register_set(32, 0);
 
 //checks which memory address is being accessed for the data
-data_counter= 0;
+int data_counter= 0;
 
-//to check that the memory set does not overflow
-memory_data= 0;
+//checks that the instruction set does not overflow
+int memory_program= 0;
+
 
 //The combined size of the instruction set and the sata set is 2^20
 //bytes, so we will have to assign some fixed value to instruction
@@ -42,9 +38,11 @@ vector<string> instruction_set;
 //stores the data set after the instruction set
 vector<int> data_set;
 
+
 //function to print the register contents after each instruction
 void print_register(vector<int> a){
 	
+
 	for(int i=0; i< a.size(); i++){
 		cout << "r" << i << " " << int_to_hex(a[i])<<  endl;
 
@@ -53,20 +51,26 @@ void print_register(vector<int> a){
 
 }
 
-
 //maps the current register to the corresponding integer
 int map(string input){
 	//note that we cant use switch statement with string 
 	//in C++ because it is not a supported type by the C++ compiler
-
-	if(input== "$zero"){
-		return 0;
-	}
-	for(int i=0; i<31; i++){
+	for(int i=0; i<32; i++){
 		if(input== ("$r" + to_string(i))){
-			return i+1;
+		return i;
+
 		}
 	}
+
+	return 100;
+
+}
+
+int str_to_int(string s){
+	stringstream num(s);
+	int helper= 0;
+	num >> helper;
+	return helper;
 }
 
 //Questions:
@@ -80,11 +84,11 @@ int main(){
 	//would help in convering string to int
 	int numeral= 0;
 
-	string k;
-	cin >> k;
+	//string k;
+	//cin >> k;
 
 	//storing all the commands in a vector
-	instream myfile(k);
+	ifstream myfile("rand.txt");
 	while(getline(myfile, line)){
 		if(memory_program<100000){
 			instruction_set.push_back(line);
@@ -98,18 +102,103 @@ int main(){
 
 	//executing the commands, remember that we need to remove the 
 	//whitespaces
-	for(int i=0; i< instruction_set.size(); i++){
+	//To help us when to end loop
+	int i=0;
+
+	//The number of instructions 
+	int instruction=0;
+
+	//executing the program
+	while(i< instruction_set.size()){
 		string s= instruction_set[i];
 		//method to remove the whitespaces
 		s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
 
 		//s now contains the current line after removing whitespace
 
-		if(s.substr(0,3)=="add"){
+
+		if(s.substr(0,3)=="add" && s.substr(0,4)!= "addi"){
+
 			//throw syntax error if no commas
-			register[map(s.substr(3,3))]= register[map(s.substr(7,3))]+ register[map(s.substr(11,3))];
+			register_set[map(s.substr(3,3))]= register_set[map(s.substr(7,3))]+ register_set[map(s.substr(11,3))];
+			i+=1;
 		}
-		print_register(register);
+
+		if(s.substr(0,4)== "addi"){
+
+			int helper=str_to_int(s.substr(12,s.size()-12));
+			register_set[map(s.substr(4,3))]= register_set[map(s.substr(8,3))] +helper;
+			i+=1;
+		}
+
+		if(s.substr(0,3)=="sub"){
+
+			register_set[map(s.substr(3,3))]= register_set[map(s.substr(7,3))]- register_set[map(s.substr(11,3))];
+			i+=1;
+		}
+		if(s.substr(0,3)=="mul"){
+
+			register_set[map(s.substr(3,3))]= register_set[map(s.substr(7,3))]* register_set[map(s.substr(11,3))];
+
+			i+=1;
+		}
+
+		if(s.substr(0,1)=="j"){
+			//Should I print if this comes or not, will be chill
+			int helper= str_to_int(s.substr(1,1));
+			i= helper-1;
+		}
+
+		if(s.substr(0,3)== "beq"){
+			if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
+				int helper= str_to_int(s.substr(11,1));
+				i= helper-1;
+			}
+		}
+
+		if(s.substr(0,3)== "bne"){
+			if(register_set[map(s.substr(3,3))]!= register_set[map(s.substr(7,3))]){
+				int helper= str_to_int(s.substr(11,1));
+				i= helper-1;
+			}
+		}
+
+		if(s.substr(0,3)== "slt"){
+			if(register_set[map(s.substr(7,3))]< register_set[map(s.substr(11,3))]){
+				register_set[map(s.substr(3,3))]= 1;
+			}
+			else{
+				register_set[map(s.substr(3,3))]= 0;
+			}
+			i= i+1;
+		}
+
+		if(s.substr(0,2)== "lw"){
+			register_set[map(s.substr(2,3))]= data_set[str_to_int(s.substr(6, s.size()-6))];
+			i+=1;
+		}
+
+		if(s.substr(0,2)== "sw"){
+			if(str_to_int(s.substr(6, s.size()-6))>237144){
+				cout << "Memory overflow";
+				return 0;
+			}
+			else{
+				data_set[str_to_int(s.substr(6, s.size()-6))]= register_set[map(s.substr(2,3))];
+			}
+			i+=1;
+		}
+
+
+
+		//IGNORE
+		//cout << instruction_set[i] << endl;
+		//cout << s << endl;
+		//cout << (s.substr(0,3)=="add") << endl;
+		instruction+=1;
+		cout << "Instruction:" << instruction <<endl;
+		print_register(register_set) ;
+		cout << "\n";
 	}
 
 }
