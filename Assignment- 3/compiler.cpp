@@ -20,8 +20,21 @@ string int_to_hex( T i )
 }
 
 vector<int> register(32, 0);
+//checks which instruction the code is currently running
+prog_counter= 1;
 
-//function to print the register contents after each function
+//checks which memory address is being accessed for the data
+data_counter= 0;
+
+//The combined size of the instruction set and the sata set is 2^20
+//bytes, so we will have to assign some fixed value to instruction
+//set and rest to the data set
+//stores the instruction set
+vector<string> instruction_set;
+//stores the data set after the instruction set
+vector<int> data_set;
+
+//function to print the register contents after each instruction
 void print_register(vector<int> a){
 	
 	for(int i=0; i< a.size(); i++){
@@ -31,6 +44,7 @@ void print_register(vector<int> a){
 
 
 }
+
 
 //maps the current register to the corresponding integer
 int map(string input){
@@ -49,6 +63,8 @@ int map(string input){
 
 //Questions:
 //How to account for comments that would exist in the code?
+//not that 8($t0) stores accesses the memory address lecated at $t0+8
+//
 
 int main(){
 	//stores the current line in the input
@@ -61,8 +77,7 @@ int main(){
 
 	instream myfile(k);
 	while(getline(myfile, line)){
-		
-		
+		instruction_set.push_back(line);
 
 	}
 
