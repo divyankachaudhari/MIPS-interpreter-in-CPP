@@ -1,21 +1,24 @@
 main:
 	addi $s0, $zero, 1000
 	addi $s1, $zero, 2500
+	addi $s2, $zero, 5
 	addi $t0, $zero, 1
 	addi $t1, $zero, 2
 	addi $t2, $zero, 3
 	addi $t3, $zero, 4
-
+	addi $t8, $zero, 6
 	sw $t0, 1000
 	sw $t1, 2500
-  sw $t8, 1008
-	sw $t2, 1004
+  	sw $t8, 1008
 	sw $t4, 2504
-
+	sw $s1, 980
+	sw $s2, 2508
 	lw $t5, 1000
 	lw $t6, 2500
-	lw $t7, 1004
-	lw $t8, 2504
+	lw $t9, 1008
+	lw $s1, 2508
+	lw $s2, 980
+
 	addi $t2, $zero, 7
 	addi $t3, $zero, 9
 	addi $t0, $zero, 323

@@ -68,9 +68,10 @@ void findNextRequests(int &i){
   instruction = instruction + busyRegisters.size();
 }
 
-int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector<int> &busyMemories, vector<int> &rows){
+int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector<int> &busyMemories, vector<int> &rows, vector<int> &numbers){
   //rewrite
   //convert them into hash sets
+  //cout << "The current row: " << to_string(currentRow) << endl;
   for(int j=0; j<busyRegisters.size(); j++){
     string s = instruction_set[numbers[j]];
     s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
@@ -111,14 +112,14 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
           rows.erase(rows.begin() + 0);
           numbers.erase(numbers.begin() + 0);
     }
-      efficientProcess(currentRow, i, busyRegisters, busyMemories, rows);
+      efficientProcess(currentRow, i, busyRegisters, busyMemories, rows, numbers);
     }
 
-    return 1;
     busyRegisters.clear();
     busyMemories.clear();
     rows.clear();
     numbers.clear();
+    return 1;
 }
 
 
@@ -241,14 +242,14 @@ int main(int argc, char** argv){
     		else if(s.substr(0,2)== "lw"){
           findNextRequests(i);
 
-          int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows);
+          int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
             if(a==0){return 0;}
     		}
 
     		else if(s.substr(0,2)== "sw"){
           findNextRequests(i);
 
-          int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows);
+          int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
             if(a==0){return 0;}
     		}
 
