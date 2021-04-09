@@ -1,24 +1,30 @@
 main:
 	addi $s0, $zero, 1000
-	addi $s1, $zero, 2500
-	addi $t0, $zero, 1
-	addi $t1, $zero, 2
-	addi $t2, $zero, 3
-	addi $t3, $zero, 4
-  addi $t4, $zero, 999
-  addi $a1, $zero, 999999
-	sw $t0, 1000
-	sw $t1, 2500
-  sw $t8, 1008
-  sw $t2, 1004
-  sw $r1, 1016
-	sw $t4, 2504
-	lw $t5, 1000
-	lw $t6, 2500
-	lw $t7, 1004
-	lw $t8, 2504
-  lw $r1, 1008
+	addi $s1, $zero, 0
+	addi $s2, $zero, 10
+	addi $t1, $zero, 0
 
+initloop: 
+	addi $t1, $t1, 1
+	sw $t1, 1000
+	addi $s0, $s0, 4
+	addi $s1, $s1, 1
+	slt $s3, $s1, $s2
+	beq $s3, $zero, initloop
 
+	addi $s0, $zero, 1000
+	addi $s1, $zero, 0
+	addi $s3, $zero, 0
+	addi $s2, $zero, 9
+
+sumloop:
+	lw $t0, 1000
+	addi $s0, $s0, 4
+	lw $t1, 1000
+	add $t2, $t0, $t1
+	sw $t2, 1000
+	addi $s1, $s1, 1
+	slt $s3, $s1, $s2
+	bne $s3, $zero, sumloop
 
 exit:

@@ -2,8 +2,8 @@
 /*
 Add [DONE] infront of done
 
-1. Change register names
-2. Change the labels for jump, etc.
+1. Change register names [DONE]
+2. Change the labels for jump, etc. [DONE] [Testing left (Although did it to some extent)]
 3. Change offsets
 4. For empty line and comment, DON'T BREAK findNextRequests
 5. Check $zero, etc in instructions other than addi
@@ -198,6 +198,35 @@ int main(int argc, char** argv){
   currentRow = -1;
   int printCheck =-1;
 
+  //Looping through the code and storing the name of all the labels
+  int rand= 0;
+
+  while(rand<instruction_set.size()){
+    string s= instruction_set[rand];
+    //method to remove the whitespaces
+    s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
+
+    if(s==""){
+          rand=rand+1;
+          continue;
+    }
+
+    else if(s.substr(s.length()-1,1) == ":"){
+        //jumpMap[s.substr(0, s.length()-1)] = rand;
+        jumpMap.insert(make_pair(s.substr(0, s.length()-1), rand));
+        //cout << s.substr(0, s.length()-1) << endl;
+        //cout << jumpMap.at(s.substr(0, s.length()-1)) << endl;
+        rand=rand+1;
+        continue;
+    }
+    else{
+      rand= rand+1;
+    }
+
+  }
+
+  //cout << rand; 
+
 
 	while(i< instruction_set.size()){
         previous_register_set = register_set;
@@ -216,26 +245,16 @@ int main(int argc, char** argv){
     			i=i+1;
     			continue;
     		}
-        else if(s.substr(0,5)=="main:"){
-          jumpMap["main"] = i;
-    			i=i+1;
-    			continue;
-    		}
-        else if(s.substr(0,5)=="exit:"){
-          jumpMap["exit"] = i;
-     			i=i+1;
-    			continue;
-    		}
 
     		else if(s.substr(0,1)== "#"){
     			i=i+1;
     			continue;
     		}
         else if(s.substr(s.length()-1,1) == ":"){
-          jumpMap[s.substr(0, s.length()-1)] = i;
           i=i+1;
           continue;
         }
+
     		else if(s.size()<2){
     			cout << "Invalid Syntax at line:" << i+1<< endl;
     			return 0;
@@ -272,20 +291,20 @@ int main(int argc, char** argv){
     		}
 
     		else if(s.substr(0,1)=="j"){
-          int a = j(i, s, clockNumber, saveCycles);
+          int a = j(i, s, clockNumber, saveCycles, jumpMap);
           if(a==0){return 0;}
           instruction+=1;
 
     		}
 
     		else if(s.substr(0,3)== "beq"){
-          int a = beq(s,clockNumber,saveCycles,i, busyRegister,register_set);
+          int a = beq(s,clockNumber,saveCycles,i, busyRegister,register_set, jumpMap);
             if(a==0){return 0;}
             instruction+=1;
     		}
 
     		else if(s.substr(0,3)== "bne"){
-          int a = bne(s,clockNumber,saveCycles,i, busyRegister,register_set);
+          int a = bne(s,clockNumber,saveCycles,i, busyRegister,register_set, jumpMap);
             if(a==0){return 0;}
             instruction+=1;
     		}

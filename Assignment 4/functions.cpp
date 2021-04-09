@@ -41,7 +41,7 @@ void print_register(vector<int> a, vector<int> b){
 
 	for(int i=8; i< 16; i++){
     if(a[i] != b[i]){
-		  cout << "$s" << i-8 << " = " << int_to_hex(a[i])<<  endl;
+		  cout << "$t" << i-8 << " = " << int_to_hex(a[i])<<  endl;
       returnValue3 = 1;
     }
 
@@ -49,7 +49,7 @@ void print_register(vector<int> a, vector<int> b){
 
 	for(int i=16; i< 24; i++){
     if(a[i] != b[i]){
-		  cout << "$t" << i-16 << " = " << int_to_hex(a[i])<<  endl;
+		  cout << "$s" << i-16 << " = " << int_to_hex(a[i])<<  endl;
       returnValue4 = 1;
     }
 
@@ -323,15 +323,18 @@ int mul(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   return 1;
 }
 
-int j(int &i, string &s, int &clockNumber, int &saveCycles){
+int j(int &i, string &s, int &clockNumber, int &saveCycles, unordered_map<string, int> jumpMap){
 
-  int helper= str_to_int(s.substr(1,s.size()-1));
-  if(helper == 2147483647){
-    cout << "Invalid Syntax at line:"<<i+1 << endl;
-    return 0;
+  string help= s.substr(1,s.size()-1);
+  //cout << s.substr(1,s.size()-1) << endl;
+
+  if(jumpMap.find(help)== jumpMap.end()){
+      cout << "Wrong branch name:" <<i+1 << endl;
+      return 0;
   }
 
-  i= helper-1;
+
+  i= jumpMap.at(help);
 
   clockNumber+=1;
   if(saveCycles > 0) {
@@ -340,47 +343,85 @@ int j(int &i, string &s, int &clockNumber, int &saveCycles){
   return 1;
 }
 
-int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set){
+int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap){
 
   ///////////////////////
 
 
-  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(3,5) != "$zero" && s.substr(9,5) != "$zero"){
+  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(3,5) != "$zero" && s.substr(9,5) != "$zero" && s.substr(7,5)!= "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
 
-  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero"){
+  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero" && s.substr(7,5)!= "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
 
-  //throw syntax error if no commas
-  if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
-    int helper= str_to_int(s.substr(11,s.size()-11));
-    if(helper == 2147483647){
-      cout << "Invalid Syntax at line:"<<i+1 << endl;
-      return 0;
+  if(s.substr(3,5) == "$zero"){
+    if(register_set[map(s.substr(9,3))] == 0){
+      string help= s.substr(13,s.size()-13);
+
+      if(jumpMap.find(help)== jumpMap.end()){
+        cout << "Wrong branch name:" <<i+1 << endl;
+        return 0;
+      }
+
+
+      i= jumpMap.at(help);
     }
-    i= helper-1;
+
+    else{
+      i++;
+    }
+  }
+
+  else if(s.substr(7,5) == "$zero"){
+    if(register_set[map(s.substr(3,3))] == 0){
+      string help= s.substr(13,s.size()-13);
+
+      if(jumpMap.find(help)== jumpMap.end()){
+        cout << "Wrong branch name:" <<i+1 << endl;
+        return 0;
+      }
+
+
+      i= jumpMap.at(help);
+    }
+    else{
+      i++;
+    }
   }
 
   else if(s.substr(3,5) == "$zero" && s.substr(9,5) == "$zero"){
-    int helper = str_to_int(s.substr(15,s.size()-15));
-    i = helper -1;
-  }
-  else if(s.substr(7,5) == "$zero"){
-    if(register_set[map(s.substr(3,3))] == 0){
-      int helper = str_to_int(s.substr(13,s.size()-13));
-      i = helper -1;
+    string help= s.substr(15,s.size()-15);
+    //cout << s.substr(1,s.size()-1) << endl;
+
+    if(jumpMap.find(help)== jumpMap.end()){
+      cout << "Wrong branch name:" <<i+1 << endl;
+      return 0;
     }
+
+
+    i= jumpMap.at(help);
+
   }
-  else if(s.substr(3,5) == "$zero"){
-    if(register_set[map(s.substr(9,3))] == 0){
-      int helper = str_to_int(s.substr(13,s.size()-13));
-      i = helper -1;
+
+  //throw syntax error if no commas
+  else if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
+    string help= s.substr(11,s.size()-11);
+    //cout << s.substr(1,s.size()-1) << endl;
+
+
+    if(jumpMap.find(help)== jumpMap.end()){
+      cout << "Wrong branch name:" <<i+1 << endl;
+      return 0;
     }
+
+
+    i= jumpMap.at(help);
   }
+
   else i++;
 
   if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
@@ -391,51 +432,89 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
 }
 
-int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set){
+int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap){
 
-                    if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(3,5) != "$zero" && s.substr(9,5) != "$zero"){
-              				cout << "Invalid Syntax at line:"<<i+1 << endl;
-              				return 0;
-              			}
+    if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(3,5) != "$zero" && s.substr(9,5) != "$zero" && s.substr(7,5)!= "$zero"){
+      //cout << "ok" << endl;
+			cout << "Invalid Syntax at line:"<<i+1 << endl;
+      //cout << "okdw" << endl;
+			return 0;
+		}
 
-              			if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero"){
-              				cout << "Invalid Syntax at line:"<<i+1 << endl;
-              				return 0;
-              			}
+		if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero" && s.substr(7,5)!= "$zero"){
+			cout << "Invalid Syntax at line:"<<i+1 << endl;
+      //cout << "ok" << endl;
+			return 0;
+		}
 
-              			//throw syntax error if no commas
-                    if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
-              				int helper= str_to_int(s.substr(11,s.size()-11));
-              				if(helper == 2147483647){
-              					cout << "Invalid Syntax at line:"<<i+1 << endl;
-              					return 0;
-              				}
-              				i= helper-1;
-              			}
+		//throw syntax error if no commas
+    if(s.substr(7,5) == "$zero"){
+      if(register_set[map(s.substr(3,3))] != 0){
+        string help= s.substr(13,s.size()-13);
 
-                    else if(s.substr(3,5) == "$zero" && s.substr(9,5) == "$zero"){
-                      i++;
-                    }
-                    else if(s.substr(7,5) == "$zero"){
-                      if(register_set[map(s.substr(3,3))] != 0){
-                        int helper = str_to_int(s.substr(13,s.size()-13));
-                        i = helper -1;
-                      }
-                    }
-                    else if(s.substr(3,5) == "$zero"){
-                      if(register_set[map(s.substr(9,3))] != 0){
-                        int helper = str_to_int(s.substr(13,s.size()-13));
-                        i = helper -1;
-                      }
-                    }
+        if(jumpMap.find(help)== jumpMap.end()){
+
+          cout << "ok2 " << endl;
+          cout << "Wrong branch name:" <<i+1 << endl;
+          return 0;
+        }
 
 
-                    if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
-                      saveCycles--;
-                    }
-                    else {clockNumber+=1; saveCycles =0;}
+        i= jumpMap.at(help);
 
-                    return 1;
+        //cout << i << endl;
+      }
+
+      else{
+        i++;
+      }
+    }
+
+    else if(s.substr(3,5) == "$zero"){
+      if(register_set[map(s.substr(9,3))] != 0){
+        string help= s.substr(13,s.size()-13);
+
+        if(jumpMap.find(help)== jumpMap.end()){
+          cout << "Wrong branch name:" <<i+1 << endl;
+          return 0;
+        }
+
+
+        i= jumpMap.at(help);
+        //cout << i << endl;
+      }
+      else{
+        i++;
+      }
+    }
+
+    else if(s.substr(3,5) == "$zero" && s.substr(9,5) == "$zero"){
+      i++;
+    }
+
+    else if(register_set[map(s.substr(3,3))]!= register_set[map(s.substr(7,3))]){
+      //c//out << "ok1 " << endl;
+			string help= s.substr(11,s.size()-11);
+      //cout << s.substr(1,s.size()-1) << endl;
+
+      if(jumpMap.find(help)== jumpMap.end()){
+        cout << "Wrong branch name:" <<i+1 << endl;
+        return 0;
+      }
+
+
+      i= jumpMap.at(help);
+		}
+
+    else {i++; cout << "wow";};
+
+
+    if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
+      saveCycles--;
+    }
+    else {clockNumber+=1; saveCycles =0;}
+
+    return 1;
 
 }
 
