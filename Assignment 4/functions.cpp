@@ -67,40 +67,70 @@ int map(string input){
 	//note that we cant use switch statement with string
 	//in C++ because it is not a supported type by the C++ compiler
 	int flag=0;
-	for(int i=0; i<10; i++){
-		if(input== ("$r" + to_string(i))){
-			flag=1;
-			return i;
 
-		}
-	}
+  for(int i=0; i<2; i++){
+    if(input== ("$v" + to_string(i))){
+      flag=1;
+      return i+2;
 
-	for(int i=0; i<10; i++){
+    }
+  }
+
+  for(int i=0; i<4; i++){
+    if(input== ("$a" + to_string(i))){
+      flag=1;
+      return i+4;
+
+    }
+  }
+
+	for(int i=0; i<8; i++){
 		if(input== ("$s" + to_string(i))){
 			flag=1;
-			return i+10;
-
+			return i+16;
 		}
 	}
 
-	for(int i=0; i<10; i++){
+	for(int i=0; i<8; i++){
 		if(input== ("$t" + to_string(i))){
 			flag=1;
-			return i+20;
+			return i+8;
 
 		}
 	}
 
-	for(int i=0; i<2; i++){
-		if(input== ("$v" + to_string(i))){
-			flag=1;
-			return i+30;
-
-		}
-	}
-
+  for(int i=8; i<10; i++){
+    if(input== ("$t" + to_string(i))){
+      flag= 1;
+      return i+ 16;
+    }
+  }
 
 
+  if( input== "$at"){
+    flag=1; 
+    return 1;
+  }
+
+  if( input== "$gp"){
+    flag=1;
+    return 28;
+  }
+
+  if( input== "$sp"){
+    flag=1;
+    return 29;
+  }
+
+  if( input== "$fp"){
+    flag=1;
+    return 30;
+  }
+
+  if( input== "$ra"){
+    flag=1;
+    return 31;
+  }
 
 
 	if(flag==0){
