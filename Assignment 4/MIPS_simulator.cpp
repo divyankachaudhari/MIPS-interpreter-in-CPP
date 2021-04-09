@@ -22,6 +22,10 @@ int rowBufferUpdates = 0;
 int busyRegister = -1;
 int busyMemory = -1;
 int saveCycles = 0;
+int rowAccessDelay;
+int columnAccessDelay;
+int clockNumber;
+int currentRow;
 
 vector<int> busyRegisters(10, -1);
 vector<int> busyMemories(10, -1);
@@ -61,22 +65,24 @@ void findNextRequests(int &i){
 
 }
 
-void efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
+int efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
   //rewrite
   //convert them into hash sets
   for(int j=0; j<busyRegisters.size(); j++){
     string s = instruction_set[numbers[j]];
     if(currentRow == rows[j]){
       if(s.substr(0,2)== "sw"){
-        sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+        int a = sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+        if(a==0){return 0;}
       }
       else if(s.substr(0,2)== "lw"){
-        lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+        int a = lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+          if(a==0){return 0;}
       }
-      busyRegisters.erase(j);
-      busyMemories.erase(j);
-      rows.erase(j);
-      numbers.erase(j);
+      busyRegisters.erase(busyRegisters.begin() + j);
+      busyMemories.erase(busyMemories.begin() + j);
+      rows.erase(rows.begin() + j);
+      numbers.erase(numbers.begin() + j);
     }
   }
 
@@ -84,23 +90,26 @@ void efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<
     while(busyRegisters.size() !=0){
       string s = instruction_set[numbers[0]];
       if(s.substr(0,2)== "sw"){
-        sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
-        busyRegisters.erase(0);
-        busyMemories.erase(0);
-        rows.erase(0);
-        numbers.erase(0);
+        int a = sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+        if(a==0){return 0;}
+        busyRegisters.erase(busyRegisters.begin() + 0);
+        busyMemories.erase(busyMemories.begin() + 0);
+        rows.erase(rows.begin() + 0);
+        numbers.erase(numbers.begin() + 0);
       }
       else if(s.substr(0,2)== "lw"){
-        lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+        int a = lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+          if(a==0){return 0;}
 
-        busyRegisters.erase(0);
-        busyMemories.erase(0);
-        rows.erase(0);
-        numbers.erase(0);
+          busyRegisters.erase(busyRegisters.begin() + 0);
+          busyMemories.erase(busyMemories.begin() + 0);
+          rows.erase(rows.begin() + 0);
+          numbers.erase(numbers.begin() + 0);
     }
       efficientProcess(currentRow, i, busyRegisters, busyMemories, rows);
     }
 
+    return 1;
 }
 
 
@@ -108,8 +117,8 @@ void efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<
 
 int main(int argc, char** argv){
 
-  int rowAccessDelay = atoi(argv[1]);
-  int columnAccessDelay = atoi(argv[2]);
+  rowAccessDelay = atoi(argv[1]);
+  columnAccessDelay = atoi(argv[2]);
   string input = argv[3];
 	//stores the current line in the input
 	string line;
@@ -132,8 +141,8 @@ int main(int argc, char** argv){
 
 	//The number of instructions
 	int instruction=0;
-  int clockNumber =0;
-  int currentRow = -1;
+  clockNumber =0;
+  currentRow = -1;
   int printCheck =-1;
 
 
@@ -221,15 +230,17 @@ int main(int argc, char** argv){
     		}
 
     		else if(s.substr(0,2)== "lw"){
-          // findNextRequests()
-          // efficientProcess()
-          int a = lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+          findNextRequests(i);
+
+          int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows);
             if(a==0){return 0;}
     		}
 
     		else if(s.substr(0,2)== "sw"){
-          int a = sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
-          if(a==0){return 0;}
+          findNextRequests(i);
+
+          int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows);
+            if(a==0){return 0;}
     		}
 
     		else{
