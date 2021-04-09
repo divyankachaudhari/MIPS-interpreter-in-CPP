@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 /*
-Add [DONE] infront of done 
+Add [DONE] infront of done
 
 1. Change register names
 2. Change the labels for jump, etc.
@@ -54,7 +54,7 @@ int memory_program= 0;
 vector<int> DRAM_memory(1048576, -2147483647);
 vector<string> instruction_set;
 vector<int> numbers;
-
+unordered_map<string, int> jumpMap;
 
 void findNextRequests(int &i){
 
@@ -217,11 +217,13 @@ int main(int argc, char** argv){
     			continue;
     		}
         else if(s.substr(0,5)=="main:"){
+          jumpMap["main"] = i;
     			i=i+1;
     			continue;
     		}
         else if(s.substr(0,5)=="exit:"){
-    			i=i+1;
+          jumpMap["exit"] = i;
+     			i=i+1;
     			continue;
     		}
 
@@ -229,7 +231,11 @@ int main(int argc, char** argv){
     			i=i+1;
     			continue;
     		}
-
+        else if(s.substr(s.length()-1,1) == ":"){
+          jumpMap[s.substr(0, s.length()-1)] = i;
+          i=i+1;
+          continue;
+        }
     		else if(s.size()<2){
     			cout << "Invalid Syntax at line:" << i+1<< endl;
     			return 0;

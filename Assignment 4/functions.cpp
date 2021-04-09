@@ -22,40 +22,48 @@ string int_to_hex( T i ) {
 
 void print_register(vector<int> a, vector<int> b){
 
-  int returnValue1=0, returnValue2=0, returnValue3=0, returnValue4=0;
-	for(int i=0; i< 10; i++){
+  int returnValue1=0, returnValue2=0, returnValue3=0, returnValue4=0, returnValue5=0;
+	for(int i=2; i< 4; i++){
     if(a[i] != b[i]){
-		  cout << "$r" << i << " = " << int_to_hex(a[i])<<  endl;
+		  cout << "$v" << i-2 << " = " << int_to_hex(a[i])<<  endl;
       returnValue1 = 1;
     }
 
 	}
 
-	for(int i=10; i< 20; i++){
+	for(int i=4; i< 8; i++){
     if(a[i] != b[i]){
-		  cout << "$s" << i-10 << " = " << int_to_hex(a[i])<<  endl;
+		  cout << "$a" << i-4 << " = " << int_to_hex(a[i])<<  endl;
       returnValue2 = 1;
     }
 
 	}
 
-	for(int i=20; i< 30; i++){
+	for(int i=8; i< 16; i++){
     if(a[i] != b[i]){
-		  cout << "$t" << i-20 << " = " << int_to_hex(a[i])<<  endl;
+		  cout << "$s" << i-8 << " = " << int_to_hex(a[i])<<  endl;
       returnValue3 = 1;
     }
 
 	}
 
-	for(int i=30; i< 32; i++){
+	for(int i=16; i< 24; i++){
     if(a[i] != b[i]){
-		  cout << "$v" << i-30 << " = " << int_to_hex(a[i])<<  endl;
+		  cout << "$t" << i-16 << " = " << int_to_hex(a[i])<<  endl;
       returnValue4 = 1;
     }
 
 	}
 
-  if(returnValue1 != 1 && returnValue2 != 1 && returnValue3 != 1 && returnValue4 != 1){
+  for(int i=24; i< 26; i++){
+    if(a[i] != b[i]){
+		  cout << "$t" << i-24 << " = " << int_to_hex(a[i])<<  endl;
+      returnValue4 = 1;
+    }
+
+	}
+
+  if(returnValue1 != 1 && returnValue2 != 1 && returnValue3 != 1 && returnValue4 != 1 && returnValue5 != 1){
     cout<< "No change in value of register" << endl;
   }
 
@@ -108,7 +116,7 @@ int map(string input){
 
 
   if( input== "$at"){
-    flag=1; 
+    flag=1;
     return 1;
   }
 
