@@ -40,6 +40,7 @@ void findNextRequests(int &i){
 
   for(int j=i; j<5+i;j++){
     string s= instruction_set[j];
+    s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
     if(s.substr(0,2)== "sw"|| s.substr(0,2)== "lw"){
 
       int memoryLocation = str_to_int(s.substr(6, s.size()-6));
@@ -62,7 +63,7 @@ void findNextRequests(int &i){
     }
     else break;
   }
-
+  i = i+ busyRegisters.size();
 }
 
 int efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
@@ -70,13 +71,14 @@ int efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<i
   //convert them into hash sets
   for(int j=0; j<busyRegisters.size(); j++){
     string s = instruction_set[numbers[j]];
+    s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
     if(currentRow == rows[j]){
       if(s.substr(0,2)== "sw"){
-        int a = sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+        int a = sw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
         if(a==0){return 0;}
       }
       else if(s.substr(0,2)== "lw"){
-        int a = lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+        int a = lw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
           if(a==0){return 0;}
       }
       busyRegisters.erase(busyRegisters.begin() + j);
@@ -89,8 +91,9 @@ int efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<i
 
     while(busyRegisters.size() !=0){
       string s = instruction_set[numbers[0]];
+      s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
       if(s.substr(0,2)== "sw"){
-        int a = sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+        int a = sw(s,clockNumber,saveCycles,numbers[0], columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
         if(a==0){return 0;}
         busyRegisters.erase(busyRegisters.begin() + 0);
         busyMemories.erase(busyMemories.begin() + 0);
@@ -98,7 +101,7 @@ int efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<i
         numbers.erase(numbers.begin() + 0);
       }
       else if(s.substr(0,2)== "lw"){
-        int a = lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+        int a = lw(s,clockNumber,saveCycles,numbers[0], columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
           if(a==0){return 0;}
 
           busyRegisters.erase(busyRegisters.begin() + 0);
