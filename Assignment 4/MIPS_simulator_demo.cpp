@@ -166,31 +166,64 @@ void print_memory(vector<int> DRAM_memory) {
 }
 
 
-void findNextRequests(vector<string> instructions, int x, int i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
+void findNextRequests(int &i, int &currentRow){
 
-  for(int j=i; j<x+i;j++){
+  for(int j=i; j<5+i;j++){
     string s= instruction_set[j];
     if(s.substr(0,2)== "sw"|| s.substr(0,2)== "lw"){
+
       int memoryLocation = str_to_int(s.substr(6, s.size()-6));
       int busyRegister = map(s.substr(2,3));
+
+
       if(find(busyMemories.begin(), busyMemories.end(), memoryLocation) != busyMemories.end()) {
           break;
       }
-      else if(find(busyRegisters.begin(), busyRegisters.end(), busyRegister) != busyRegisters.end())
+      else if(find(busyRegisters.begin(), busyRegisters.end(), busyRegister) != busyRegisters.end()) {
+        break;
+      }
       else {
           /* v does not contain x */
           busyRegisters.push_back(busyRegister);
           busyMemories.push_back(memoryLocation);
+          rows.push_back(memoryLocation/1024);
       }
     }
-
+    else break;
   }
-void efficientProcess(int currentRow, int i, vector<int> busyRegisters, vector<int> busyMemories ){
-  //rewrite
-  //convert them into hash sets
-
 
 }
+
+void efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
+  //rewrite
+  //convert them into hash sets
+  for(int j=0; j<busyRegister.size(); j++){
+    if(currentRow == rows[j]){
+      if(s.substr(0,2)== "sw"){
+        sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+      }
+      else if(s.substr(0,2)== "lw"){
+        lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+      }
+      busyRegisters.erase(j);
+      busyMemories.erase(j);
+      rows.erase(j);
+    }
+  }
+
+      if(s.substr(0,2)== "sw"){
+        sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+      }
+      else if(s.substr(0,2)== "lw"){
+        lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+    }
+    while(busyRegisters.size() !=0){
+      efficientProcess(currentRow, i, busyRegisters, busyMemories, rows);
+    }
+
+}
+
+
 
 
 
@@ -214,7 +247,7 @@ int main(int argc, char** argv){
 	ifstream myfile(input);
 	while(getline(myfile, line)){
 		if(memory_program<100000){
-			instruction_set.push_back(line);
+			instruction_set.push(line);
 			memory_program+=4;
 		}
 		else{
