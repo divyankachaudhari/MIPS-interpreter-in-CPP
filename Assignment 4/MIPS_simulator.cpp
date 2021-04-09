@@ -1,3 +1,22 @@
+///////////////////////////////////////////////////////////////////////////////
+/*
+Add [DONE] infront of done 
+
+1. Change register names
+2. Change the labels for jump, etc.
+3. Change offsets
+4. For empty line and comment, DON'T BREAK findNextRequests
+5. Check $zero, etc in instructions other than addi
+6. Check bne, beq which runs infinite loop
+7. Output correct number of instructions [DONE]
+
+
+
+
+*////////////////////////////////////////////////////////////////////////////////
+
+
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -65,7 +84,7 @@ void findNextRequests(int &i){
     else break;
   }
   i = i+ busyRegisters.size();
-  instruction = instruction + busyRegisters.size();
+
 }
 
 int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector<int> &busyMemories, vector<int> &rows, vector<int> &numbers){
@@ -81,11 +100,14 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
       //cout<< "Pushing in the for loop into deletej: "<< j <<endl;
       if(s.substr(0,2)== "sw"){
         int a = sw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+
         if(a==0){return 0;}
+        instruction++;
       }
       else if(s.substr(0,2)== "lw"){
         int a = lw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
           if(a==0){return 0;}
+          instruction++;
       }
 
     }
@@ -116,6 +138,7 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
       if(s.substr(0,2)== "sw"){
         int a = sw(s,clockNumber,saveCycles,numbers[0], columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
         if(a==0){return 0;}
+        instruction++;
         busyRegisters.erase(busyRegisters.begin() + 0);
         busyMemories.erase(busyMemories.begin() + 0);
         //cout<< busyMemories[0] << endl;;
@@ -124,6 +147,7 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
       }
       else if(s.substr(0,2)== "lw"){
         int a = lw(s,clockNumber,saveCycles,numbers[0], columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+        instruction++;
           if(a==0){return 0;}
 
           busyRegisters.erase(busyRegisters.begin() + 0);
@@ -220,42 +244,50 @@ int main(int argc, char** argv){
     		else if(s.substr(0,3)=="add" && s.substr(0,4)!= "addi"){
           int a = add(s,clockNumber,saveCycles,i, busyRegister,register_set);
           if(a==0){return 0;}
+          instruction+=1;
         }
 
     		else if(s.substr(0,4)== "addi"){
           int a = addi(s,clockNumber,saveCycles,i, busyRegister,register_set);
           if(a==0){return 0;}
+          instruction+=1;
     		}
 
     		else if(s.substr(0,3)=="sub"){
           int a = sub(s,clockNumber,saveCycles,i, busyRegister,register_set);
           if(a==0){return 0;}
+          instruction+=1;
     		}
 
     		else if(s.substr(0,3)=="mul"){
           int a = mul(s,clockNumber,saveCycles,i, busyRegister,register_set);
           if(a==0){return 0;}
+          instruction+=1;
     		}
 
     		else if(s.substr(0,1)=="j"){
           int a = j(i, s, clockNumber, saveCycles);
           if(a==0){return 0;}
+          instruction+=1;
 
     		}
 
     		else if(s.substr(0,3)== "beq"){
           int a = beq(s,clockNumber,saveCycles,i, busyRegister,register_set);
             if(a==0){return 0;}
+            instruction+=1;
     		}
 
     		else if(s.substr(0,3)== "bne"){
           int a = bne(s,clockNumber,saveCycles,i, busyRegister,register_set);
             if(a==0){return 0;}
+            instruction+=1;
     		}
 
     		else if(s.substr(0,3)== "slt"){
           int a = slt(s,clockNumber,saveCycles,i, busyRegister,register_set);
             if(a==0){return 0;}
+            instruction+=1;
     		}
 
     		else if(s.substr(0,2)== "lw"){
@@ -277,7 +309,7 @@ int main(int argc, char** argv){
     			return 0;
     		}
 
-        instruction+=1;
+
 
         if(s.substr(0,2)!= "sw" && s.substr(0,2)!= "lw") {
           cout << "Cycle " << clockNumber-saveCycles << ": ";
