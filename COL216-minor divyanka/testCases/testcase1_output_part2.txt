@@ -1,0 +1,41 @@
+
+Cycle description: 
+
+Cycle 1: $t0 = 00000001
+Cycle 2: $t1 = 00000002
+Cycle 3: DRAM request issued
+Cycle 4-15: Memory address from 1000-1003 = 1
+Cycle 16: DRAM request issued
+Cycle 17-38: Memory address from 1024-1027 = 2
+Cycle 39: DRAM request issued
+Cycle 40-61: $t2 = 00000001
+Cycle 40: No change in value of register
+Cycle 41: No change in value of register
+Cycle 42: No change in value of register
+Cycle 43: No change in value of register
+Cycle 44: No change in value of register
+Cycle 45: No change in value of register
+Cycle 46: No change in value of register
+Cycle 47: No change in value of register
+Cycle 62: $t3 = 00000001
+Cycle 63: $t3 = 00000002
+Cycle 64: $t3 = 00000003
+Cycle 65: DRAM request issued
+Cycle 66-87: $t3 = 00000002
+Cycle 66: $t1 = 000003e7
+Cycle 88: No change in value of register
+Cycle 89: $t3 = 00000003
+Cycle 90: DRAM request issued
+Cycle 91-92: Memory address from 1028-1031 = 3
+
+Memory content at the end of execution: 
+
+1000-1003 : 1
+1024-1027 : 2
+1028-1031 : 3
+
+Total number of the instructions: 21
+Total number of clock cycles: 92
+Total number of row buffer updates/row activations: 4
+Row access delay considered to be: 10
+Column access delay considered to be: 2

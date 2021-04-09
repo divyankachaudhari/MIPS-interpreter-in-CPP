@@ -31,7 +31,7 @@ vector<int> DRAM_memory(1048576, -2147483647);
 vector<string> instruction_set;
 
 
-// void findNextRequests(int &i, int &currentRow){
+// void findNextRequests(int &i){
 //
 //   for(int j=i; j<5+i;j++){
 //     string s= instruction_set[j];
