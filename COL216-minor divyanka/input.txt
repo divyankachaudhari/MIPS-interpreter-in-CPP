@@ -5,17 +5,20 @@ main:
 	addi $t1, $zero, 2
 	addi $t2, $zero, 3
 	addi $t3, $zero, 4
+  addi $t4, $zero, 999
 
 	sw $t0, 1000
 	sw $t1, 2500
-
-	sw $t2, 1004
+  sw $t8, 1008
+  sw $t2, 1004
+  sw $r1, 1016
 	sw $t4, 2504
-
 	lw $t5, 1000
 	lw $t6, 2500
 	lw $t7, 1004
 	lw $t8, 2504
+  lw $r1, 1008
+
 
 
 exit:
