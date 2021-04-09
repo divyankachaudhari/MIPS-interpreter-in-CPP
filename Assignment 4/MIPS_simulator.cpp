@@ -69,6 +69,7 @@ void findNextRequests(int &i){
 }
 
 int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector<int> &busyMemories, vector<int> &rows, vector<int> &numbers){
+  vector<int> deletej;
   //rewrite
   //convert them into hash sets
   //cout << "The current row: " << to_string(currentRow) << endl;
@@ -76,6 +77,8 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
     string s = instruction_set[numbers[j]];
     s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
     if(currentRow == rows[j]){
+      deletej.push_back(j);
+      //cout<< "Pushing in the for loop into deletej: "<< j <<endl;
       if(s.substr(0,2)== "sw"){
         int a = sw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
         if(a==0){return 0;}
@@ -84,15 +87,30 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
         int a = lw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
           if(a==0){return 0;}
       }
-      busyRegisters.erase(busyRegisters.begin() + j);
-      busyMemories.erase(busyMemories.begin() + j);
-      rows.erase(rows.begin() + j);
-      numbers.erase(numbers.begin() + j);
+
     }
   }
 
+  //cout<< "printing contents of deletej"<< endl;
+  // for(int j=0; j<deletej.size();j++){
+  //   cout<< deletej[j] << endl;
+  //
+  // }
+  //cout <<"enetrring delete  loop"<< endl;
+  for(int j=0; j<deletej.size();j++){
+    //cout<< j<< " " << deletej[j] << endl;
+    busyRegisters.erase(busyRegisters.begin() + deletej[j]-j);
+    //cout<< "deleted busy resgiter" << endl;
+    busyMemories.erase(busyMemories.begin() +  deletej[j]-j);
+    rows.erase(rows.begin() +  deletej[j]-j);
+    numbers.erase(numbers.begin() +  deletej[j]-j);
+    //cout<< j<< " completed" << endl;
+  }
+  //cout<<"exiting dlete loop"<<endl;
+  deletej.clear();
 
     while(busyRegisters.size() !=0){
+      //cout<< "Entering while loop" << endl;
       string s = instruction_set[numbers[0]];
       s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
       if(s.substr(0,2)== "sw"){
@@ -100,6 +118,7 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
         if(a==0){return 0;}
         busyRegisters.erase(busyRegisters.begin() + 0);
         busyMemories.erase(busyMemories.begin() + 0);
+        cout<< busyMemories[0] << endl;;
         rows.erase(rows.begin() + 0);
         numbers.erase(numbers.begin() + 0);
       }
