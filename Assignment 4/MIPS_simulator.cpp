@@ -118,7 +118,7 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
         if(a==0){return 0;}
         busyRegisters.erase(busyRegisters.begin() + 0);
         busyMemories.erase(busyMemories.begin() + 0);
-        cout<< busyMemories[0] << endl;;
+        //cout<< busyMemories[0] << endl;;
         rows.erase(rows.begin() + 0);
         numbers.erase(numbers.begin() + 0);
       }
