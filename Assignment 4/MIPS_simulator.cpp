@@ -11,7 +11,7 @@
 #include "functions.h"
 using namespace std;
 
-template< typename T >
+// template< typename T >
 
 
 vector<int> register_set(32, 0);
@@ -31,63 +31,66 @@ vector<int> DRAM_memory(1048576, -2147483647);
 vector<string> instruction_set;
 
 
-void findNextRequests(int &i, int &currentRow){
-
-  for(int j=i; j<5+i;j++){
-    string s= instruction_set[j];
-    if(s.substr(0,2)== "sw"|| s.substr(0,2)== "lw"){
-
-      int memoryLocation = str_to_int(s.substr(6, s.size()-6));
-      int busyRegister = map(s.substr(2,3));
-
-
-      if(find(busyMemories.begin(), busyMemories.end(), memoryLocation) != busyMemories.end()) {
-          break;
-      }
-      else if(find(busyRegisters.begin(), busyRegisters.end(), busyRegister) != busyRegisters.end()) {
-        break;
-      }
-      else {
-          /* v does not contain x */
-          busyRegisters.push_back(busyRegister);
-          busyMemories.push_back(memoryLocation);
-          rows.push_back(memoryLocation/1024);
-      }
-    }
-    else break;
-  }
-
-}
-
-void efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
-  //rewrite
-  //convert them into hash sets
-  for(int j=0; j<busyRegister.size(); j++){
-    string s = instruction_set[i+j];
-    if(currentRow == rows[j]){
-      if(s.substr(0,2)== "sw"){
-        sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
-      }
-      else if(s.substr(0,2)== "lw"){
-        lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
-      }
-      busyRegisters.erase(j);
-      busyMemories.erase(j);
-      rows.erase(j);
-    }
-  }
-
-      if(s.substr(0,2)== "sw"){
-        sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
-      }
-      else if(s.substr(0,2)== "lw"){
-        lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
-    }
-    while(busyRegisters.size() !=0){
-      efficientProcess(currentRow, i, busyRegisters, busyMemories, rows);
-    }
-
-}
+// void findNextRequests(int &i, int &currentRow){
+//
+//   for(int j=i; j<5+i;j++){
+//     string s= instruction_set[j];
+//     if(s.substr(0,2)== "sw"|| s.substr(0,2)== "lw"){
+//
+//       int memoryLocation = str_to_int(s.substr(6, s.size()-6));
+//       int busyRegister = map(s.substr(2,3));
+//
+//
+//       if(find(busyMemories.begin(), busyMemories.end(), memoryLocation) != busyMemories.end()) {
+//           break;
+//       }
+//       else if(find(busyRegisters.begin(), busyRegisters.end(), busyRegister) != busyRegisters.end()) {
+//         break;
+//       }
+//       else {
+//           /* v does not contain x */
+//           busyRegisters.push_back(busyRegister);
+//           busyMemories.push_back(memoryLocation);
+//           rows.push_back(memoryLocation/1024);
+//       }
+//     }
+//     else break;
+//   }
+//
+// }
+//
+// void efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
+//   //rewrite
+//   //convert them into hash sets
+//   for(int j=0; j<busyRegisters.size(); j++){
+//     string s = instruction_set[i+j];
+//     if(currentRow == rows[j]){
+//       if(s.substr(0,2)== "sw"){
+//         sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+//       }
+//       else if(s.substr(0,2)== "lw"){
+//         lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+//       }
+//       busyRegisters.erase(j);
+//       busyMemories.erase(j);
+//       rows.erase(j);
+//     }
+//   }
+//
+//
+//     while(busyRegisters.size() !=0){
+//       string s = instruction_set[i];
+//       if(s.substr(0,2)== "sw"){
+//         sw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
+//         busyRegisters.erase();
+//       }
+//       else if(s.substr(0,2)== "lw"){
+//         lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
+//     }
+//       efficientProcess(currentRow, i, busyRegisters, busyMemories, rows);
+//     }
+//
+// }
 
 
 
@@ -207,8 +210,8 @@ int main(int argc, char** argv){
     		}
 
     		else if(s.substr(0,2)== "lw"){
-          // findNextRequests
-          // efficientProcess
+          // findNextRequests()
+          // efficientProcess()
           int a = lw(s,clockNumber,saveCycles,i, columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
             if(a==0){return 0;}
     		}
