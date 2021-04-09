@@ -425,7 +425,7 @@ int slt(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   return 1;
 }
 
-int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &rowBufferUpdates, vector<int> DRAM_memory){
+int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &rowBufferUpdates, vector<int> &DRAM_memory){
   if(s.substr(5,1)!=","){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
@@ -487,7 +487,7 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
 }
 
 
-int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &busyMemory, int &rowBufferUpdates, vector<int> DRAM_memory){
+int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &busyMemory, int &rowBufferUpdates, vector<int> &DRAM_memory){
 
   if(s.substr(5,1)!=","){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
