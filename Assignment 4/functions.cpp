@@ -464,7 +464,8 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
   int prevClock = clockNumber+1;
 
   if(currentRow == -1){
-    cout<< "Uninitilised value is being accessed";
+    cout<< "Uninitilised value is being accessed" << endl;
+    return 0;
   }
   else if(currentRow == memoryLocation/1024){
     clockNumber+= columnAccessDelay;
@@ -482,6 +483,7 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
 
   cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";
    print_register(register_set, previous_register_set);
+   previous_register_set = register_set;
    return 1;
 
 }

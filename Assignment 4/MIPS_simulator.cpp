@@ -26,10 +26,11 @@ int rowAccessDelay;
 int columnAccessDelay;
 int clockNumber;
 int currentRow;
+int instruction;
 
-vector<int> busyRegisters(10, -1);
-vector<int> busyMemories(10, -1);
-vector<int> rows(10, -1);
+vector<int> busyRegisters;
+vector<int> busyMemories;
+vector<int> rows;
 int memory_program= 0;
 vector<int> DRAM_memory(1048576, -2147483647);
 vector<string> instruction_set;
@@ -64,9 +65,10 @@ void findNextRequests(int &i){
     else break;
   }
   i = i+ busyRegisters.size();
+  instruction = instruction + busyRegisters.size();
 }
 
-int efficientProcess(int currentRow, int &i, vector<int> busyRegisters, vector<int> busyMemories, vector<int> rows){
+int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector<int> &busyMemories, vector<int> &rows){
   //rewrite
   //convert them into hash sets
   for(int j=0; j<busyRegisters.size(); j++){
@@ -143,7 +145,7 @@ int main(int argc, char** argv){
   int i=0;
 
 	//The number of instructions
-	int instruction=0;
+ instruction=0;
   clockNumber =0;
   currentRow = -1;
   int printCheck =-1;
