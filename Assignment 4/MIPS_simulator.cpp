@@ -39,7 +39,7 @@ vector<int> numbers;
 
 void findNextRequests(int &i){
 
-  for(int j=i; j<5+i;j++){
+  for(int j=i; j<instruction_set.size()+i;j++){
     string s= instruction_set[j];
     s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
     if(s.substr(0,2)== "sw"|| s.substr(0,2)== "lw"){
@@ -115,6 +115,10 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
     }
 
     return 1;
+    busyRegisters.clear();
+    busyMemories.clear();
+    rows.clear();
+    numbers.clear();
 }
 
 
