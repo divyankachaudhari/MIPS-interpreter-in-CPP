@@ -16,6 +16,13 @@ main:
 	lw $t6, 2500
 	lw $t7, 1004
 	lw $t8, 2504
+	addi $t2, $zero, 7
+	addi $t3, $zero, 9
+	addi $t0, $zero, 323
+	addi $t1, $zero, 31
+	addi $t2, $zero, 3
+	addi $t3, $zero, 31231234
+
 
 
 exit:
