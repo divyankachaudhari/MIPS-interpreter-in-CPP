@@ -1,0 +1,80 @@
+Cycle description: 
+
+Cycle 1: $s0 = 000003e8
+Cycle 2: $s1 = 000009c4
+Cycle 3: $t0 = 00000001
+Cycle 4: $t1 = 00000002
+Cycle 5: $t2 = 00000003
+Cycle 6: $t3 = 00000004
+Cycle 7: DRAM request issued
+Cycle 8-14: Memory address from 1000-1003 = 1
+Cycle 15: DRAM request issued
+Cycle 16-20: Memory address from 1004-1007 = 3
+Cycle 21: DRAM request issued
+Cycle 22-26: $t5 = 00000001
+Cycle 27: DRAM request issued
+Cycle 28-32: $t7 = 00000003
+Cycle 33: DRAM request issued
+Cycle 34-42: Memory address from 2500-2503 = 2
+Cycle 43: DRAM request issued
+Cycle 44-48: Memory address from 2504-2507 = 0
+Cycle 49: DRAM request issued
+Cycle 50-54: No change in value of register
+Cycle 55: DRAM request issued
+Cycle 56-60: Memory address from 2500-2503 = 2
+Cycle 56: No change in value of register
+Cycle 57: No change in value of register
+Cycle 58: No change in value of register
+Cycle 61: DRAM request issued
+Cycle 62-66: Memory address from 2504-2507 = 0
+Cycle 67: DRAM request issued
+Cycle 68-72: $t6 = 00000002
+Cycle 73: DRAM request issued
+Cycle 74-78: No change in value of register
+Cycle 79: DRAM request issued
+Cycle 80-88: No change in value of register
+Cycle 89: DRAM request issued
+Cycle 90-94: No change in value of register
+Cycle 95: DRAM request issued
+Cycle 96-104: No change in value of register
+Cycle 96: No change in value of register
+Cycle 105: DRAM request issued
+Cycle 106-110: No change in value of register
+Cycle 111: DRAM request issued
+Cycle 112-116: No change in value of register
+Cycle 117: DRAM request issued
+Cycle 118-126: No change in value of register
+Cycle 127: DRAM request issued
+Cycle 128-132: No change in value of register
+Cycle 133: DRAM request issued
+Cycle 134-142: No change in value of register
+Cycle 134: No change in value of register
+Cycle 135: No change in value of register
+Cycle 136: No change in value of register
+Cycle 143: DRAM request issued
+Cycle 144-148: Memory address from 2504-2507 = 0
+Cycle 149: DRAM request issued
+Cycle 150-154: No change in value of register
+Cycle 155: DRAM request issued
+Cycle 156-160: No change in value of register
+Cycle 161: DRAM request issued
+Cycle 162-170: No change in value of register
+Cycle 171: DRAM request issued
+Cycle 172-176: No change in value of register
+Cycle 177: DRAM request issued
+Cycle 178-186: No change in value of register
+Cycle 178: No change in value of register
+Cycle 179: No change in value of register
+Cycle 180: No change in value of register
+
+Memory content at the end of execution: 
+
+1000-1003 : 1
+1004-1007 : 3
+2500-2503 : 2
+2504-2507 : 0
+
+Total number of clock cycles: 186
+Total number of row buffer updates/row activations: 8
+Row access delay considered to be: 2
+Column access delay considered to be: 5

@@ -1,53 +1,31 @@
 main:
-    addi $t0,$zero,1024
-    addi $t1,$zero,2024
-    addi $t2,$zero,3024
-    addi $t3,$zero,4024
-    addi $t4,$zero,5024
-    addi $t5,$zero,6024
-    j b1
-
-b1:
-    sw $t0,1000($t1)
-    sw $t1,1000($t2)
-    sw $t2,1000($t3)
-    sw $t3,1000($t4)
-    add $t0,$t1,$t2
-    lw $t0,1000($t1)
-    lw $t1,1000($t2)
-    lw $t2,1000($t3)
-    beq $t4,$t3,b2
-    bne $t4,$t3,b2
+    addi $s0, $zero, 1000
+    addi $s1, $zero, 1024
+    addi $t0, $zero, 1
+    addi $t1, $zero, 2
+    sw $t0, 0($s0)
+    sw $t1, 0($s1)
+    lw $t2, 0($s0)
+    lw $t3, 0($s1)
+    beq $t0, $t1, ee
 
 
+ee:
+    add $t8, $t6, $t2
+    addi $s2, $zero, 1028
+    sw $t3, 0($s2)main:
+    addi $s0, $zero, 1000
+    addi $s1, $zero, 1024
+    addi $t0, $zero, 1
+    addi $t1, $zero, 2
+    sw $t0, 0($s0)
+    sw $t1, 0($s1)
+    lw $t2, 0($s0)
+    lw $t3, 0($s1)
+    beq $t0, $t1, good
 
 
-b2:
-    mul $t1,$t2,$t3
-    sw $t0,1000($t1)
-    sw $t1,1000($t2)
-    sw $t2,1000($t3)
-    sw $t3,1000($t4)
-    slt $t0,$t1,$t2
-    lw $t0,1000($t1)
-    lw $t1,1000($t2)
-    lw $t2,1000($t3)
-    j b3
-
-b3:
-    sub $t3,$t2,$t1
-    sw $t2,1000($t4)
-    sw $t1,1000($t5)
-    sw $t0,1000($t6)
-    #sw $t3,1000($t1)
-    sw $t4,1000($t2)
-    lw $t2,1000($t3)
-    lw $t3,1000($t4)
-    sw $t5,1000($t5)
-    sw $t0,1000($t6)
-    addi $t0,$zero,12
-    addi $t1,$zero,24
-    addi $t2,$zero,16
-    addi $t3,$zero,20
-    addi $t4,$zero,124
-    addi $t5,$zero,120	
+good:
+    add $t8, $t6, $t2
+    addi $s2, $zero, 1028
+    sw $t3, 0($s2)
