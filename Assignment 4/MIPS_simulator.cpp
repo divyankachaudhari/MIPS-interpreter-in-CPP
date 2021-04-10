@@ -3,11 +3,11 @@
 Add [DONE] infront of done
 
 1. Change register names [DONE]
-2. Change the labels for jump, etc. [DONE] [Testing left (Although did it to some extent)]
-3. Change offsets
+2. Change the labels for jump, etc. [DONE] [Testing left (Although did it to some extent)][Some errors left do check them](one extra cycle)
+3. Change offsets 
 4. For empty line and comment, DON'T BREAK findNextRequests
 5. Check $zero, etc in instructions other than addi
-6. Check bne, beq which runs infinite loop
+6. Check bne, beq which runs infinite loop [DONE]
 7. Output correct number of instructions [DONE]
 
 
