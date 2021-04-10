@@ -346,11 +346,11 @@ int j(int &i, string &s, int &clockNumber, int &saveCycles, unordered_map<string
   return 1;
 }
 
-int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap){
+int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap, vector<string> &donecheck){
 
   ///////////////////////
 
-
+  string help;
   if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(3,5) != "$zero" && s.substr(9,5) != "$zero" && s.substr(7,5)!= "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
@@ -363,7 +363,7 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
   if(s.substr(3,5) == "$zero"){
     if(register_set[map(s.substr(9,3))] == 0){
-      string help= s.substr(13,s.size()-13);
+      help= s.substr(13,s.size()-13);
 
       if(jumpMap.find(help)== jumpMap.end()){
         cout << "Wrong branch name:" <<i+1 << endl;
@@ -381,7 +381,7 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
   else if(s.substr(7,5) == "$zero"){
     if(register_set[map(s.substr(3,3))] == 0){
-      string help= s.substr(13,s.size()-13);
+      help= s.substr(13,s.size()-13);
 
       if(jumpMap.find(help)== jumpMap.end()){
         cout << "Wrong branch name:" <<i+1 << endl;
@@ -397,7 +397,7 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   }
 
   else if(s.substr(3,5) == "$zero" && s.substr(9,5) == "$zero"){
-    string help= s.substr(15,s.size()-15);
+    help= s.substr(15,s.size()-15);
     //cout << s.substr(1,s.size()-1) << endl;
 
     if(jumpMap.find(help)== jumpMap.end()){
@@ -412,7 +412,7 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
   //throw syntax error if no commas
   else if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
-    string help= s.substr(11,s.size()-11);
+    help= s.substr(11,s.size()-11);
     //cout << s.substr(1,s.size()-1) << endl;
 
 
@@ -427,6 +427,12 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
   else i++;
 
+  if(jumpMap.find(help)!= jumpMap.end()){
+    for(int r=jumpMap.at(help); r<donecheck.size(); r++){
+      donecheck[r]="not";
+    }
+  }
+
   // if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
   //   saveCycles--;
   // }
@@ -436,8 +442,8 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
 }
 
-int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap){
-
+int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap, vector<string> &donecheck){
+    string help;
     if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(3,5) != "$zero" && s.substr(9,5) != "$zero" && s.substr(7,5)!= "$zero"){
       //cout << "ok" << endl;
 			cout << "Invalid Syntax at line:"<<i+1 << endl;
@@ -454,17 +460,18 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 		//throw syntax error if no commas
     if(s.substr(7,5) == "$zero"){
       if(register_set[map(s.substr(3,3))] != 0){
-        string help= s.substr(13,s.size()-13);
+        help= s.substr(13,s.size()-13);
+        //cout << help << endl;
 
         if(jumpMap.find(help)== jumpMap.end()){
 
-          cout << "ok2 " << endl;
           cout << "Wrong branch name:" <<i+1 << endl;
           return 0;
         }
 
 
         i= jumpMap.at(help);
+        //cout << i;
 
         //cout << i << endl;
       }
@@ -476,7 +483,7 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
     else if(s.substr(3,5) == "$zero"){
       if(register_set[map(s.substr(9,3))] != 0){
-        string help= s.substr(13,s.size()-13);
+        help= s.substr(13,s.size()-13);
 
         if(jumpMap.find(help)== jumpMap.end()){
           cout << "Wrong branch name:" <<i+1 << endl;
@@ -498,7 +505,7 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
     else if(register_set[map(s.substr(3,3))]!= register_set[map(s.substr(7,3))]){
       //c//out << "ok1 " << endl;
-			string help= s.substr(11,s.size()-11);
+			help= s.substr(11,s.size()-11);
       //cout << s.substr(1,s.size()-1) << endl;
 
       if(jumpMap.find(help)== jumpMap.end()){
@@ -511,6 +518,12 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 		}
 
     else i++;
+
+    if(jumpMap.find(help)!= jumpMap.end()){
+      for(int r=jumpMap.at(help); r<donecheck.size(); r++){
+        donecheck[r]="not";
+      }
+    }
 
 
     //if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){

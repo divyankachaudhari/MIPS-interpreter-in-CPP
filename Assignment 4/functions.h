@@ -31,9 +31,9 @@ int sub(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 int mul(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set);
 
 int j(int &i, string &s, int &clockNumber, int &saveCycles, unordered_map<string, int> jumpMap);
-int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap);
+int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap, vector<string> &donecheck);
 
-int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap);
+int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set, unordered_map<string, int> jumpMap, vector<string> &donecheck);
 
 int slt(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set);
 
