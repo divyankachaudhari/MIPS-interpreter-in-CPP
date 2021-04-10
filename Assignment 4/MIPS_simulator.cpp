@@ -3,8 +3,8 @@
 Add [DONE] infront of done
 
 1. Change register names [DONE]
-2. Change the labels for jump, etc. [DONE] [Testing left (Although did it to some extent)][Some errors left do check them](one extra cycle)
-3. Change offsets 
+2. Change the labels for jump, etc. [DONE] 
+3. Change offsets [DONE]
 4. For empty line and comment, DON'T BREAK findNextRequests
 5. Check $zero, etc in instructions other than addi
 6. Check bne, beq which runs infinite loop [DONE]
@@ -81,7 +81,7 @@ void findNextRequests(int &i){
           numbers.push_back(j);
       }
     }
-    else break;
+    else if()
   }
   i = i+ busyRegisters.size();
 
@@ -166,8 +166,6 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
 }
 
 
-
-
 int main(int argc, char** argv){
 
   rowAccessDelay = atoi(argv[1]);
@@ -193,7 +191,7 @@ int main(int argc, char** argv){
   int i=0;
 
 	//The number of instructions
- instruction=0;
+  instruction=0;
   clockNumber =0;
   currentRow = -1;
   int printCheck =-1;
@@ -213,7 +211,7 @@ int main(int argc, char** argv){
 
     else if(s.substr(s.length()-1,1) == ":"){
         //jumpMap[s.substr(0, s.length()-1)] = rand;
-        jumpMap.insert(make_pair(s.substr(0, s.length()-1), rand));
+        jumpMap.insert(make_pair(s.substr(0, s.length()-1), rand+1));
         //cout << s.substr(0, s.length()-1) << endl;
         //cout << jumpMap.at(s.substr(0, s.length()-1)) << endl;
         rand=rand+1;
@@ -336,7 +334,7 @@ int main(int argc, char** argv){
 
 
 
-        if(s.substr(0,2)!= "sw" && s.substr(0,2)!= "lw") {
+        if(s.substr(0,2)!= "sw" && s.substr(0,2)!= "lw" && s.substr(0,3)!= "bne" && s.substr(0,3)!= "beq" && s.substr(0,1)!= "j") {
           cout << "Cycle " << clockNumber-saveCycles << ": ";
           print_register(register_set, previous_register_set);
         }

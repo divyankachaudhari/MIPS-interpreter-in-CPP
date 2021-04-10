@@ -173,12 +173,12 @@ void print_memory(vector<int> DRAM_memory) {
 }
 
 int add(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set){
-  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(7,5) != "$zero" && s.substr(12,5) != "$zero"){
+  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
 
-  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(7,5) != "$zero" && s.substr(12,5) != "$zero"){
+  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
@@ -244,17 +244,20 @@ int addi(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister
           saveCycles--;
         }
         else {clockNumber+=1; saveCycles =0;}
+
+        //cout << "The clock number is:" << clockNumber << endl;
+
         return 1;
 }
 
 int sub(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set){
 
-  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(7,5) != "$zero" && s.substr(12,5) != "$zero"){
+  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
 
-  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(7,5) != "$zero" && s.substr(12,5) != "$zero"){
+  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
@@ -287,12 +290,12 @@ int sub(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
 int mul(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set){
 
-  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(7,5) != "$zero" && s.substr(12,5) != "$zero"){
+  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
 
-  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(7,5) != "$zero" && s.substr(12,5) != "$zero"){
+  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
@@ -336,10 +339,10 @@ int j(int &i, string &s, int &clockNumber, int &saveCycles, unordered_map<string
 
   i= jumpMap.at(help);
 
-  clockNumber+=1;
-  if(saveCycles > 0) {
-    saveCycles--;
-  }
+  //clockNumber+=1;
+  //if(saveCycles > 0) {
+   // saveCycles--;
+  //}
   return 1;
 }
 
@@ -424,10 +427,11 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
   else i++;
 
-  if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
-    saveCycles--;
-  }
-  else {clockNumber+=1; saveCycles =0;}
+  // if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
+  //   saveCycles--;
+  // }
+  // else {clockNumber+=1; 
+  //   saveCycles =0;}
   return 1;
 
 }
@@ -506,13 +510,14 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
       i= jumpMap.at(help);
 		}
 
-    else {i++; cout << "wow";};
+    else i++;
 
 
-    if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
-      saveCycles--;
-    }
-    else {clockNumber+=1; saveCycles =0;}
+    //if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
+    //  saveCycles--;
+    //}
+    //else {clockNumber+=1; 
+    //  saveCycles =0;}
 
     return 1;
 
@@ -520,26 +525,49 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
 int slt(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set){
 
-  if(s.substr(6,1)!="," || s.substr(10,1)!=","){
+  if((s.substr(6,1)!="," || s.substr(10,1)!=",") && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
 
-  if(map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100){
+  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(7,5) != "$zero" && s.substr(13,5) != "$zero" && s.substr(11,5) != "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
 
-
-  if(register_set[map(s.substr(7,3))]< register_set[map(s.substr(11,3))]){
-    register_set[map(s.substr(3,3))]= 1;
-  }
-  else{
+  if(s.substr(7,5) == "$zero" && s.substr(12,5) == "$zero"){
     register_set[map(s.substr(3,3))]= 0;
   }
-  i= i+1;
+  else if(s.substr(7,5) == "$zero"){
+    if(0 < register_set[map(s.substr(13,3))]){
+      register_set[map(s.substr(3,3))]= 1;
+    }
+    else{
+      register_set[map(s.substr(3,3))]= 0;
+    }
+  }
+  else if(s.substr(12,5) == "$zero"){
+    if(register_set[map(s.substr(7,3))]< 0){
+      register_set[map(s.substr(3,3))]= 1;
+    }
+    else{
+      register_set[map(s.substr(3,3))]= 0;
+    }
+  }
+  else {
+    if(register_set[map(s.substr(7,3))]< register_set[map(s.substr(11,3))]){
+      register_set[map(s.substr(3,3))]= 1;
+    }
+    else{
+      register_set[map(s.substr(3,3))]= 0;
+    }
+  }
+  i+=1;
 
-  clockNumber+=1;
+  if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(11,3))!= busyRegister ){
+    saveCycles--;
+  }
+  else {clockNumber+=1; saveCycles =0;}
   return 1;
 }
 
@@ -553,12 +581,33 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
-  int helper=str_to_int(s.substr(6, s.size()-6));
+
+  int k=0;
+  for(int i= 0; i< s.size(); i++){
+    if(s.substr(i,1)=="("){
+      k= i;
+      break;
+    }
+  }
+
+  int helper=str_to_int(s.substr(6, k-6));
   if(helper == 2147483647){
       cout << "Invalid Syntax at line:"<<i+1 << endl;
       return 0;
   }
-  int memoryLocation = (str_to_int(s.substr(6, s.size()-6)));
+
+  if(s.substr(s.size()-1, 1)!= ")"){
+    cout << "Invalid Syntax at line:"<<i+1 << endl;
+    return 0;
+  }
+
+  int memoryLocation;
+  if(s.substr(k+1, 5)== "$zero"){
+    memoryLocation = str_to_int(s.substr(6, k-6));
+  }
+  else{
+    memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[map(s.substr(k+1, 3))];
+  }
   if(DRAM_memory[memoryLocation]== -2147483647){
     cout << "Trying to access uninitialised memory at line:" <<i+1 << endl;
     return 0;
@@ -576,6 +625,7 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
   clockNumber+=1;
 
   /// Printing
+  //cout << "The clock number is:" << clockNumber << endl;
 
 
   cout << "Cycle " << clockNumber << ": " << "DRAM request issued" <<endl;
@@ -619,12 +669,28 @@ int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
     return 0;
   }
 
-  int helper=str_to_int(s.substr(6, s.size()-6));
+  int k=0;
+  for(int i= 0; i< s.size(); i++){
+    if(s.substr(i,1)=="("){
+      k= i;
+      break;
+    }
+  }
+
+  int helper=str_to_int(s.substr(6, k-6));
   if(helper == 2147483647){
       cout << "Invalid Syntax at line:"<<i+1 << endl;
       return 0;
   }
-  int memoryLocation = str_to_int(s.substr(6, s.size()-6));
+
+  int memoryLocation;
+  if(s.substr(k+1, 5)== "$zero"){
+    memoryLocation = str_to_int(s.substr(6, k-6));
+  }
+  else{
+    memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[map(s.substr(k+1, 3))];
+  }
+
   if(memoryLocation>1048576){
     cout << " Data Memory overflow at line:" << i+1 << endl;
     return 0;
@@ -635,13 +701,13 @@ int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
   }
   else{
     //data_set.insert(make_pair(memoryLocation, register_set[map(s.substr(2,3))]));
+
      DRAM_memory[memoryLocation] = register_set[map(s.substr(2,3))];
      busyMemory = memoryLocation;
   }
   i+=1;
 
-  clockNumber+=1;
-
+  clockNumber+=1; 
   /// Printing
 
   cout << "Cycle " << clockNumber << ": " << "DRAM request issued" <<endl;
@@ -670,6 +736,8 @@ int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
     cout << "Something went wrong";
     return 0;
   }
+
+  //cout << "The clock number is:" << clockNumber << endl;
 
   cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";
   cout<< "Memory address from " << memoryLocation << "-" << memoryLocation+3 << " = " << DRAM_memory[memoryLocation] <<endl;
