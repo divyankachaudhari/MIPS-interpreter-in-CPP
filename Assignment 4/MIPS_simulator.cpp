@@ -48,6 +48,7 @@ int currentRow;
 int instruction;
 
 vector<int> busyRegisters;
+vector<int> busyRegistersother;
 vector<string> donecheck;
 vector<int> busyMemories;
 vector<int> rows;
@@ -59,22 +60,34 @@ unordered_map<string, int> jumpMap;
 
 int check_busy(string s){
   
-  int busy1= map(s.substr(3,3));
-  int busy2= map(s.substr(7,3));
-  int busy3= map(s.substr(11,3));
+  //cout << "wow" << endl;
+  int busy1, busy2, busy3;
+  if(map(s.substr(3,3))!=100){
+    busy1= map(s.substr(3,3));
+  }
+  if(map(s.substr(7,3))!=100){
+    busy2= map(s.substr(11,3));
+  }
+  //cout << s.substr(11,3) << endl;
+  if(map(s.substr(11,3))!=100){
+    busy3= map(s.substr(11,3));
+  }
   if(find(busyRegisters.begin(), busyRegisters.end(), busy1) != busyRegisters.end()) {
+    //cout << "wow1" << endl;
     return 0;
   }
   if(find(busyRegisters.begin(), busyRegisters.end(), busy2) != busyRegisters.end()) {
+    //cout << "wow2" << endl;
     return 0;
   }
   if(find(busyRegisters.begin(), busyRegisters.end(), busy3) != busyRegisters.end()) {
+    //cout << "wow3" << endl;
     return 0;
   }
 
-  busyRegisters.push_back(map(s.substr(3,3)));
-  busyRegisters.push_back(map(s.substr(7,3)));
-  busyRegisters.push_back(map(s.substr(11,3)));
+  busyRegistersother.push_back(map(s.substr(3,3)));
+  busyRegistersother.push_back(map(s.substr(7,3)));
+  busyRegistersother.push_back(map(s.substr(11,3)));
   return 1;
 }
 
@@ -115,7 +128,7 @@ void findNextRequests(int &i){
 
       int busyRegister = map(s.substr(2,3));
 
-      if(find(busyRegisters.begin(), busyRegisters.end(), busyRegister) != busyRegisters.end()) {
+      if(find(busyRegistersother.begin(), busyRegistersother.end(), busyRegister) != busyRegistersother.end()) {
         break;
       }
       else {
@@ -149,15 +162,20 @@ void findNextRequests(int &i){
 
       else if(s.substr(0,4)== "addi"){
         int busy1= map(s.substr(4,3));
-        int busy2= map(s.substr(8,3));
+        int busy2;
+        if(s.substr(8,5)!="$zero"){
+          busy2= map(s.substr(8,3));
+        }
         if(find(busyRegisters.begin(), busyRegisters.end(), busy1) != busyRegisters.end()) {
           break;
         }
         if(find(busyRegisters.begin(), busyRegisters.end(), busy2) != busyRegisters.end()) {
           break;
         }
-        busyRegisters.push_back(map(s.substr(4,3)));
-        busyRegisters.push_back(map(s.substr(8,3)));
+        busyRegistersother.push_back(map(s.substr(4,3)));
+        if(s.substr(8,5)!="$zero"){
+          busyRegistersother.push_back(map(s.substr(8,3)));
+        }
 
       }
 
