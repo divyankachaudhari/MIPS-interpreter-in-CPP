@@ -124,7 +124,7 @@ int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector
     s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
 
     if(currentRow == rows[j]){
-      cout << currentRow << endl;
+      //cout << currentRow << endl;
       deletej.push_back(j);
       //cout<< "Pushing in the for loop into deletej: "<< j <<endl;
       if(s.substr(0,2)== "sw"){
