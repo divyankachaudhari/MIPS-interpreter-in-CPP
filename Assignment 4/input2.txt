@@ -1,24 +1,16 @@
 main:
 	addi $s0, $zero, 1000
-	addi $s1, $zero, 2500
+	addi $s1, $zero, 1024
 	addi $t0, $zero, 1
 	addi $t1, $zero, 2
-	addi $t2, $zero, 3
-	addi $t3, $zero, 4
-  addi $t4, $zero, 999
-
-	sw $t0, 1000
-	sw $t1, 2500
-  sw $t8, 1008
-  sw $t2, 1004
-  sw $r1, 1016
-	sw $t4, 2504
-	lw $t5, 1000
-	lw $t6, 2500
-	lw $t7, 1004
-	lw $t8, 2504
-  lw $r1, 1008
+	sw $t0, 0($s0)
+	sw $t1, 0($s1)
+	lw $t2, 0($s0)
+	lw $t3, 0($s1)
+	beq $t0, $t1, ee
 
 
-
-exit:
+ee:
+	add $t8, $t6, $t2
+	addi $s2, $zero, 1028
+	sw $t3, 0($s2)

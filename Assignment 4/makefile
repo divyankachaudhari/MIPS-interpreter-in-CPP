@@ -1,6 +1,6 @@
 run:
 	g++ -o MIPS functions.cpp MIPS_simulator.cpp
-	./MIPS 2 5 input1.txt
+	./MIPS 10 2 input5.txt
 
 demo:
 	g++ -o MIPS MIPS_simulator_demo.cpp

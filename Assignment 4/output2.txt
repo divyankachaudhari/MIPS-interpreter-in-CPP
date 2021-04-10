@@ -1,0 +1,29 @@
+Cycle description: 
+
+Cycle 1: $s0 = 000003e8
+Cycle 2: $s1 = 00000400
+Cycle 3: $t0 = 00000001
+Cycle 4: $t1 = 00000002
+Cycle 5: DRAM request issued
+Cycle 6-12: Memory address from 1000-1003 = 1
+Cycle 13: DRAM request issued
+Cycle 14-18: $t2 = 00000001
+Cycle 19: DRAM request issued
+Cycle 20-28: Memory address from 1024-1027 = 2
+Cycle 29: DRAM request issued
+Cycle 30-34: $t3 = 00000002
+Cycle 30: $t0 = 00000001
+Cycle 31: $s2 = 00000404
+Cycle 35: DRAM request issued
+Cycle 36-40: Memory address from 1028-1031 = 2
+
+Memory content at the end of execution: 
+
+1000-1003 : 1
+1024-1027 : 2
+1028-1031 : 2
+
+Total number of clock cycles: 40
+Total number of row buffer updates/row activations: 2
+Row access delay considered to be: 2
+Column access delay considered to be: 5

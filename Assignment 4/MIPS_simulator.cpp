@@ -131,6 +131,10 @@ void findNextRequests(int &i){
       if(find(busyRegistersother.begin(), busyRegistersother.end(), busyRegister) != busyRegistersother.end()) {
         break;
       }
+
+      //else if(find(busyRegistersother.begin(), busyRegistersother.end(), map(s.substr(k+1,3))) != busyRegistersother.end()){
+      //  break;
+      //}
       else {
           /* v does not contain x */
           if(s.substr(0,2)== "lw"){
@@ -532,7 +536,7 @@ int main(int argc, char** argv){
      donecheck.push_back("not");
    }
 
-  cout << donecheck.size() << endl;
+  //cout << donecheck.size() << endl;
 
   int i=0;
 
@@ -583,7 +587,7 @@ int main(int argc, char** argv){
 
     if(s.size()>0 && s.substr(0,1)== "j"){
       string help= s.substr(1,s.size()-1);
-      cout << help << endl;
+      //cout << help << endl;
 
       int k= jumpMap.at(help);
       for(int r=k; r< instruction_set.size(); r++){
@@ -609,7 +613,7 @@ int main(int argc, char** argv){
   cout<< "\nMemory content at the end of execution: \n"<<endl;
   print_memory(DRAM_memory);
   cout<< "\n";
-  cout << "Total number of the instructions: " << instruction <<endl;
+  //cout << "Total number of the instructions: " << instruction <<endl;
   cout<< "Total number of clock cycles: " << clockNumber << endl;
   cout<< "Total number of row buffer updates/row activations: " << rowBufferUpdates << endl;
 

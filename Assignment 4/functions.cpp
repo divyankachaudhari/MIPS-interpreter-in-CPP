@@ -356,8 +356,9 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
     return 0;
   }
 
-  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero" && s.substr(7,5)!= "$zero"){
+  if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero" && s.substr(7,5)!= "$zero"){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
+    //cout << "wow" << endl;
     return 0;
   }
 
@@ -451,7 +452,7 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 			return 0;
 		}
 
-		if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100 || map(s.substr(11,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero" && s.substr(7,5)!= "$zero"){
+		if((map(s.substr(7,3))==100 || map(s.substr(3,3))==100) && s.substr(9,5) != "$zero" && s.substr(3,5) != "$zero" && s.substr(7,5)!= "$zero"){
 			cout << "Invalid Syntax at line:"<<i+1 << endl;
       //cout << "ok" << endl;
 			return 0;

@@ -1,0 +1,53 @@
+main :
+    addi $t0,$zero,1024
+    addi $t1,$zero,2024
+    addi $t2,$zero,3024
+    addi $t3,$zero,4024
+    addi $t4,$zero,5024
+    addi $t5,$zero,6024
+    j b1
+
+b1 :
+    lw $t0,1000($t1)
+    lw $t1,1000($t2)
+    lw $t2,1000($t3)
+    lw $t3,1000($t4)
+    add $t0,$t1,$t2
+    lw $t0,1000($t1)
+    lw $t1,1000($t2)
+    lw $t2,1000($t3)
+    beq $t4,$t3,b2
+    bne $t4,$t3,b2
+
+
+
+
+b2 :
+    mul $t1,$t2,$t3
+    lw $t0,1000($t1)
+    lw $t1,1000($t2)
+    lw $t2,1000($t3)
+    lw $t3,1000($t4)
+    slt $t0,$t1,$t2
+    lw $t0,1000($t1)
+    lw $t1,1000($t2)
+    lw $t2,1000($t3)
+    j b3
+
+b3 :
+    sub $t3,$t2,$t1
+    lw $t2,1000($t4)
+    lw $t1,1000($t5)
+    lw $t0,1000($t6)
+    lw $t3,1000($t1)
+    lw $t4,1000($t2)
+    lw $t2,1000($t3)
+    lw $t3,1000($t4)
+    lw $t5,1000($t5)
+    lw $t0,1000($t6)
+    addi $t0,$zero,12
+    addi $t1,$zero,24
+    addi $t2,$zero,16
+    addi $t3,$zero,20
+    addi $t4,$zero,124
+    addi $t5,$zero,120	
