@@ -206,94 +206,95 @@ void findNextRequests(int &i){
 
       else if(s.substr(0,3)== "beq"){
 
-          if(s.substr(3,5) == "$zero"){
-            if(register_set[map(s.substr(9,3))] == 0){
-              string help= s.substr(13,s.size()-13);
+        break;
+        //   if(s.substr(3,5) == "$zero"){
+        //     if(register_set[map(s.substr(9,3))] == 0){
+        //       string help= s.substr(13,s.size()-13);
 
-              if(jumpMap.find(help)== jumpMap.end()){
-                break;
-              }
+        //       if(jumpMap.find(help)== jumpMap.end()){
+        //         break;
+        //       }
 
-              j= jumpMap.at(help)- 1;
-            }
-          }
+        //       j= jumpMap.at(help)- 1;
+        //     }
+        //   }
 
-          else if(s.substr(7,5) == "$zero"){
-            if(register_set[map(s.substr(3,3))] == 0){
-              string help= s.substr(13,s.size()-13);
+        //   else if(s.substr(7,5) == "$zero"){
+        //     if(register_set[map(s.substr(3,3))] == 0){
+        //       string help= s.substr(13,s.size()-13);
 
-              if(jumpMap.find(help)== jumpMap.end()){
-                break;
-              }
+        //       if(jumpMap.find(help)== jumpMap.end()){
+        //         break;
+        //       }
 
-              j= jumpMap.at(help)- 1;
-            }
-          }
+        //       j= jumpMap.at(help)- 1;
+        //     }
+        //   }
 
-          else if(s.substr(3,5) == "$zero" && s.substr(9,5) == "$zero"){
-            string help= s.substr(15,s.size()-15);
-            //cout << s.substr(1,s.size()-1) << endl;
+        //   else if(s.substr(3,5) == "$zero" && s.substr(9,5) == "$zero"){
+        //     string help= s.substr(15,s.size()-15);
+        //     //cout << s.substr(1,s.size()-1) << endl;
 
-            if(jumpMap.find(help)== jumpMap.end()){
-              break;
-            }
+        //     if(jumpMap.find(help)== jumpMap.end()){
+        //       break;
+        //     }
 
-            j= jumpMap.at(help) -1;
+        //     j= jumpMap.at(help) -1;
 
-          }
+        //   }
 
-        //throw syntax error if no commas
-        else if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
-          string help= s.substr(11,s.size()-11);
+        // //throw syntax error if no commas
+        // else if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
+        //   string help= s.substr(11,s.size()-11);
 
-          if(jumpMap.find(help)== jumpMap.end()){
-            break;
-          }
-          j= jumpMap.at(help) - 1;
-        }
+        //   if(jumpMap.find(help)== jumpMap.end()){
+        //     break;
+        //   }
+        //   j= jumpMap.at(help) - 1;
+        // }
       }
 
       else if(s.substr(0,3)== "bne"){
 
-
-        if(s.substr(7,5) == "$zero"){
-          if(register_set[map(s.substr(3,3))] != 0){
-            string help= s.substr(13,s.size()-13);
-            if(jumpMap.find(help)== jumpMap.end()){
-              break;
-            }
-
-
-            j= jumpMap.at(help)-1;      
-          }
-        }
-
-        else if(s.substr(3,5) == "$zero"){
-          if(register_set[map(s.substr(9,3))] != 0){
-            string help= s.substr(13,s.size()-13);
-
-            if(jumpMap.find(help)== jumpMap.end()){
-              break;
-            }
+        break;
+        // if(s.substr(7,5) == "$zero"){
+        //   if(register_set[map(s.substr(3,3))] != 0){
+        //     string help= s.substr(13,s.size()-13);
+        //     if(jumpMap.find(help)== jumpMap.end()){
+        //       break;
+        //     }
 
 
-            j= jumpMap.at(help)-1;
-            //cout << i << endl;
-          }
-        }
+        //     j= jumpMap.at(help)-1;      
+        //   }
+        // }
 
-        else if(register_set[map(s.substr(3,3))]!= register_set[map(s.substr(7,3))]){
-          //c//out << "ok1 " << endl;
-          string help= s.substr(11,s.size()-11);
-          //cout << s.substr(1,s.size()-1) << endl;
+        // else if(s.substr(3,5) == "$zero"){
+        //   if(register_set[map(s.substr(9,3))] != 0){
+        //     string help= s.substr(13,s.size()-13);
 
-          if(jumpMap.find(help)== jumpMap.end()){
-            break;
-          }
+        //     if(jumpMap.find(help)== jumpMap.end()){
+        //       break;
+        //     }
 
 
-          j= jumpMap.at(help)-1;
-        }
+        //     j= jumpMap.at(help)-1;
+        //     //cout << i << endl;
+        //   }
+        // }
+
+        // else if(register_set[map(s.substr(3,3))]!= register_set[map(s.substr(7,3))]){
+        //   //c//out << "ok1 " << endl;
+        //   string help= s.substr(11,s.size()-11);
+        //   //cout << s.substr(1,s.size()-1) << endl;
+
+        //   if(jumpMap.find(help)== jumpMap.end()){
+        //     break;
+        //   }
+
+
+        //   j= jumpMap.at(help)-1;
+        // }
       }
 
 
