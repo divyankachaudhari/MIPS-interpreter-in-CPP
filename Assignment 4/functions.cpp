@@ -630,6 +630,10 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
     cout<< "Memory location not accesible at line: " << i+1 <<endl;
     return 0;
   }
+
+  else if(memoryLocation> 1024*1024){
+    cout << "Data memory overflow" << endl;
+  }
   else{
     register_set[map(s.substr(2,3))]=DRAM_memory[memoryLocation];
     busyRegister = map(s.substr(2,3));
@@ -712,6 +716,10 @@ int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
   else if(memoryLocation%4 != 0){
     cout<< "Memory location not accesible at line: " << i+1 <<endl;
     return 0;
+  }
+
+  else if(memoryLocation> 1024*1024){
+    cout << "Data memory overflow" << endl;
   }
   else{
     //data_set.insert(make_pair(memoryLocation, register_set[map(s.substr(2,3))]));

@@ -132,9 +132,9 @@ void findNextRequests(int &i){
         break;
       }
 
-      //else if(find(busyRegistersother.begin(), busyRegistersother.end(), map(s.substr(k+1,3))) != busyRegistersother.end()){
-      //  break;
-      //}
+      else if(find(busyRegistersother.begin(), busyRegistersother.end(), map(s.substr(k+1,3))) != busyRegistersother.end()){
+        break;
+      }
       else {
           /* v does not contain x */
           if(s.substr(0,2)== "lw"){
