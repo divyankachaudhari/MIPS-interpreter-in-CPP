@@ -437,7 +437,7 @@ int beq(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   // if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
   //   saveCycles--;
   // }
-  // else {clockNumber+=1; 
+  // else {clockNumber+=1;
   //   saveCycles =0;}
   return 1;
 
@@ -530,7 +530,7 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
     //if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(9,3))!= busyRegister ){
     //  saveCycles--;
     //}
-    //else {clockNumber+=1; 
+    //else {clockNumber+=1;
     //  saveCycles =0;}
 
     return 1;
@@ -729,7 +729,7 @@ int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
   }
   i+=1;
 
-  clockNumber+=1; 
+  clockNumber+=1;
   /// Printing
 
   cout << "Cycle " << clockNumber << ": " << "DRAM request issued" <<endl;

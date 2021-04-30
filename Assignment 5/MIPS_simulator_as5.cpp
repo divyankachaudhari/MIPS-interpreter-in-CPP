@@ -33,8 +33,8 @@ using namespace std;
 // template< typename T >
 
 
-vector<int> register_set(32, 0);
-vector<int> previous_register_set(32, 0);
+vector<vector<int>> register_set;
+vector<vector<int>> previous_register_set;
 
 int data_counter= 0;
 int rowBufferUpdates = 0;
@@ -49,364 +49,17 @@ int instruction;
 
 vector<int> busyRegisters;
 vector<int> busyRegistersother;
-vector<string> donecheck;
+vector<vector<string>> donecheck;
 vector<int> busyMemories;
 vector<int> rows;
 int memory_program= 0;
 vector<int> DRAM_memory(1048576, -2147483647);
-vector<string> instruction_set;
+vector<vector<string>> instruction_set;
 vector<int> numbers;
-unordered_map<string, int> jumpMap;
+vector<unordered_map<string, int>> jumpMap;
 
-int check_busy(string s){
-
-  //cout << "wow" << endl;
-  int busy1, busy2, busy3;
-  if(map(s.substr(3,3))!=100){
-    busy1= map(s.substr(3,3));
-  }
-  if(map(s.substr(7,3))!=100){
-    busy2= map(s.substr(11,3));
-  }
-  //cout << s.substr(11,3) << endl;
-  if(map(s.substr(11,3))!=100){
-    busy3= map(s.substr(11,3));
-  }
-  if(find(busyRegisters.begin(), busyRegisters.end(), busy1) != busyRegisters.end()) {
-    //cout << "wow1" << endl;
-    return 0;
-  }
-  if(find(busyRegisters.begin(), busyRegisters.end(), busy2) != busyRegisters.end()) {
-    //cout << "wow2" << endl;
-    return 0;
-  }
-  if(find(busyRegisters.begin(), busyRegisters.end(), busy3) != busyRegisters.end()) {
-    //cout << "wow3" << endl;
-    return 0;
-  }
-
-  busyRegistersother.push_back(map(s.substr(3,3)));
-  busyRegistersother.push_back(map(s.substr(7,3)));
-  busyRegistersother.push_back(map(s.substr(11,3)));
-  return 1;
-}
-
-
-void findNextRequests(int &i){
-
-  int hell;
-
-  for(int j=i; j<instruction_set.size()+i;j++){
-    hell= j;
-    string s= instruction_set[j];
-    s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
-    if(s.substr(0,2)== "sw" || s.substr(0,2)== "lw"){
-
-      int k=0;
-        for(int i= 0; i< s.size(); i++){
-          if(s.substr(i,1)=="("){
-            k= i;
-            break;
-          }
-        }
-      int helper=str_to_int(s.substr(6, k-6));
-        if(helper == 2147483647){
-            break;
-        }
-
-        if(s.substr(s.size()-1, 1)!= ")"){
-          break;
-        }
-
-      int memoryLocation;
-        if(s.substr(k+1, 5)== "$zero"){
-          memoryLocation = str_to_int(s.substr(6, k-6));
-        }
-        else{
-          memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[map(s.substr(k+1, 3))];
-        }
-
-      int busyRegister = map(s.substr(2,3));
-
-      if(find(busyRegistersother.begin(), busyRegistersother.end(), busyRegister) != busyRegistersother.end()) {
-        break;
-      }
-
-      // else if(find(busyRegistersother.begin(), busyRegistersother.end(), map(s.substr(k+1,3))) != busyRegistersother.end()){
-      //   break;
-      // }
-      else {
-          /* v does not contain x */
-          if(s.substr(0,2)== "lw"){
-            busyRegisters.push_back(busyRegister);
-          }
-          rows.push_back(memoryLocation/1024);
-          numbers.push_back(j);
-      }
-    }
-
-    else{
-      if(s==""){
-        continue;
-      }
-
-      else if(s.substr(0,1)== "#"){
-        continue;
-      }
-      else if(s.substr(s.length()-1,1) == ":"){
-        continue;
-      }
-
-      else if(s.substr(0,3)=="add" && s.substr(0,4)!= "addi"){
-        int k= check_busy(s);
-        if(k==0){
-          break;
-        }
-      }
-
-      else if(s.substr(0,4)== "addi"){
-        int busy1= map(s.substr(4,3));
-        int busy2;
-        if(s.substr(8,5)!="$zero"){
-          busy2= map(s.substr(8,3));
-        }
-        if(find(busyRegisters.begin(), busyRegisters.end(), busy1) != busyRegisters.end()) {
-          break;
-        }
-        if(find(busyRegisters.begin(), busyRegisters.end(), busy2) != busyRegisters.end()) {
-          break;
-        }
-        busyRegistersother.push_back(map(s.substr(4,3)));
-        if(s.substr(8,5)!="$zero"){
-          busyRegistersother.push_back(map(s.substr(8,3)));
-        }
-
-      }
-
-      else if(s.substr(0,3)=="sub"){
-        int k= check_busy(s);
-        if(k==0){
-          break;
-        }
-      }
-
-      else if(s.substr(0,3)=="mul"){
-        int k= check_busy(s);
-        if(k==0){
-          break;
-        }
-      }
-
-      else if(s.substr(0,1)=="j"){
-
-        string help= s.substr(1,s.size()-1);
-        if(jumpMap.find(help)== jumpMap.end()){
-            //cout << "Wrong branch name:" <<i+1 << endl;
-            break;
-        }
-        j= jumpMap.at(help)-1;
-
-      }
-
-      else if(s.substr(0,3)== "beq"){
-
-        break;
-        //   if(s.substr(3,5) == "$zero"){
-        //     if(register_set[map(s.substr(9,3))] == 0){
-        //       string help= s.substr(13,s.size()-13);
-
-        //       if(jumpMap.find(help)== jumpMap.end()){
-        //         break;
-        //       }
-
-        //       j= jumpMap.at(help)- 1;
-        //     }
-        //   }
-
-        //   else if(s.substr(7,5) == "$zero"){
-        //     if(register_set[map(s.substr(3,3))] == 0){
-        //       string help= s.substr(13,s.size()-13);
-
-        //       if(jumpMap.find(help)== jumpMap.end()){
-        //         break;
-        //       }
-
-        //       j= jumpMap.at(help)- 1;
-        //     }
-        //   }
-
-        //   else if(s.substr(3,5) == "$zero" && s.substr(9,5) == "$zero"){
-        //     string help= s.substr(15,s.size()-15);
-        //     //cout << s.substr(1,s.size()-1) << endl;
-
-        //     if(jumpMap.find(help)== jumpMap.end()){
-        //       break;
-        //     }
-
-        //     j= jumpMap.at(help) -1;
-
-        //   }
-
-        // //throw syntax error if no commas
-        // else if(register_set[map(s.substr(3,3))]== register_set[map(s.substr(7,3))]){
-        //   string help= s.substr(11,s.size()-11);
-
-        //   if(jumpMap.find(help)== jumpMap.end()){
-        //     break;
-        //   }
-        //   j= jumpMap.at(help) - 1;
-        // }
-      }
-
-      else if(s.substr(0,3)== "bne"){
-
-        break;
-        // if(s.substr(7,5) == "$zero"){
-        //   if(register_set[map(s.substr(3,3))] != 0){
-        //     string help= s.substr(13,s.size()-13);
-        //     if(jumpMap.find(help)== jumpMap.end()){
-        //       break;
-        //     }
-
-
-        //     j= jumpMap.at(help)-1;
-        //   }
-        // }
-
-        // else if(s.substr(3,5) == "$zero"){
-        //   if(register_set[map(s.substr(9,3))] != 0){
-        //     string help= s.substr(13,s.size()-13);
-
-        //     if(jumpMap.find(help)== jumpMap.end()){
-        //       break;
-        //     }
-
-
-        //     j= jumpMap.at(help)-1;
-        //     //cout << i << endl;
-        //   }
-        // }
-
-        // else if(register_set[map(s.substr(3,3))]!= register_set[map(s.substr(7,3))]){
-        //   //c//out << "ok1 " << endl;
-        //   string help= s.substr(11,s.size()-11);
-        //   //cout << s.substr(1,s.size()-1) << endl;
-
-        //   if(jumpMap.find(help)== jumpMap.end()){
-        //     break;
-        //   }
-
-
-        //   j= jumpMap.at(help)-1;
-        // }
-      }
-
-
-      else if(s.substr(0,3)== "slt"){
-        int k= check_busy(s);
-        if(k==0){
-          break;
-        }
-      }
-
-      else{
-        break;
-      }
-
-    }
-  }
-  i = i+1;
-  //cout << i << endl;
-  //cout << i << endl;
-  //cout << busyRegisters.size() << endl;
-  //cout << busyMemories.size() << endl;
-  //cout << rows.size() << endl;
-  //cout << numbers.size() << endl;
-
-
-}
-
-int efficientProcess(int &currentRow, int &i, vector<int> &busyRegisters, vector<int> &busyMemories, vector<int> &rows, vector<int> &numbers){
-  vector<int> deletej;
-  //rewrite
-  //convert them into hash sets
-  //cout << "The current row: " << to_string(currentRow) << endl;
-
-  //cout << "Entering" << endl;
-  for(int j=0; j<rows.size(); j++){
-    //cout << "ok " << endl;
-    string s = instruction_set[numbers[j]];
-    s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
-    //cout << currentRow << endl;
-    if(currentRow == rows[j]){
-      donecheck[numbers[j]]= "done";
-      deletej.push_back(j);
-      //cout<< "Pushing in the for loop into deletej: "<< j <<endl;
-      if(s.substr(0,2)== "sw"){
-        int a = sw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
-        //cout << "wow" << endl;
-        if(a==0){return 0;}
-        instruction++;
-      }
-      else if(s.substr(0,2)== "lw"){
-        int a = lw(s,clockNumber,saveCycles,numbers[j],columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
-          if(a==0){return 0;}
-          instruction++;
-      }
-
-    }
-  }
-
-  for(int j=0; j<deletej.size();j++){
-    //cout<< j<< " " << deletej[j] << endl;
-    //cout << j << endl;
-
-    //busyRegisters.erase(busyRegisters.begin() + deletej[j]-j);
-    //busyMemories.erase(busyMemories.begin() +  deletej[j]-j);
-    rows.erase(rows.begin() +  deletej[j]-j);
-    numbers.erase(numbers.begin() +  deletej[j]-j);
-    //cout<< j<< " completed" << endl;
-  }
-  //cout<<"exiting dlete loop"<<endl;
-  deletej.clear();
-
-    while(rows.size() !=0){
-      //cout<< "Entering while loop" << endl;
-      string s = instruction_set[numbers[0]];
-      s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
-      if(s.substr(0,2)== "sw"){
-        donecheck[numbers[0]]= "done";
-        int a = sw(s,clockNumber,saveCycles,numbers[0], columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, busyMemory, rowBufferUpdates, DRAM_memory);
-        if(a==0){return 0;}
-        instruction++;
-        //busyRegisters.erase(busyRegisters.begin() + 0);
-        //busyMemories.erase(busyMemories.begin() + 0);
-        rows.erase(rows.begin() + 0);
-        numbers.erase(numbers.begin() + 0);
-      }
-      else if(s.substr(0,2)== "lw"){
-        donecheck[numbers[0]]= "done";
-        int a = lw(s,clockNumber,saveCycles,numbers[0], columnAccessDelay,rowAccessDelay,currentRow,busyRegister, register_set, previous_register_set, rowBufferUpdates, DRAM_memory);
-        instruction++;
-          if(a==0){return 0;}
-
-          //busyRegisters.erase(busyRegisters.begin() + 0);
-          //busyMemories.erase(busyMemories.begin() + 0);
-          rows.erase(rows.begin() + 0);
-          numbers.erase(numbers.begin() + 0);
-    }
-      efficientProcess(currentRow, i, busyRegisters, busyMemories, rows, numbers);
-    }
-
-    busyRegisters.clear();
-    busyMemories.clear();
-    rows.clear();
-    numbers.clear();
-    return 1;
-}
-
-
-int process(int &printCheck, int &i, string &s, string &s1){
+// process function which takes any line as input and then processes it
+int process(int &printCheck, int &i, string &s, string &s1, int q){
 
   //method to remove the whitespaces
   s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
@@ -442,65 +95,67 @@ int process(int &printCheck, int &i, string &s, string &s1){
   }
 
   else if(s.substr(0,3)=="add" && s.substr(0,4)!= "addi"){
-    int a = add(s,clockNumber,saveCycles,i, busyRegister,register_set);
+    int a = add(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,4)== "addi"){
-    int a = addi(s,clockNumber,saveCycles,i, busyRegister,register_set);
+    int a = addi(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,3)=="sub"){
-    int a = sub(s,clockNumber,saveCycles,i, busyRegister,register_set);
+    int a = sub(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,3)=="mul"){
-    int a = mul(s,clockNumber,saveCycles,i, busyRegister,register_set);
+    int a = mul(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,1)=="j"){
-    int a = j(i, s, clockNumber, saveCycles, jumpMap);
+    int a = j(i, s, clockNumber, saveCycles, jumpMap[q]);
     return a;
     instruction+=1;
 
   }
 
   else if(s.substr(0,3)== "beq"){
-    int a = beq(s,clockNumber,saveCycles,i, busyRegister,register_set, jumpMap, donecheck);
+    int a = beq(s,clockNumber,saveCycles,i, busyRegister,register_set[q], jumpMap[q], donecheck[q]);
       return a;
       instruction+=1;
   }
 
   else if(s.substr(0,3)== "bne"){
-    int a = bne(s,clockNumber,saveCycles,i, busyRegister,register_set, jumpMap, donecheck);
+    int a = bne(s,clockNumber,saveCycles,i, busyRegister,register_set[q], jumpMap[q], donecheck[q]);
       return a;
       instruction+=1;
   }
 
   else if(s.substr(0,3)== "slt"){
-    int a = slt(s,clockNumber,saveCycles,i, busyRegister,register_set);
+    int a = slt(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
       return a;
       instruction+=1;
   }
 
   else if(s.substr(0,2)== "lw"){
-    findNextRequests(i);
-
-    int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
+    //findNextRequests(i);
+    //EDIT HERE
+    //int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
+    int a =0;
       return a;
   }
 
   else if(s.substr(0,2)== "sw"){
-    findNextRequests(i);
-
-    int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
+    //findNextRequests(i);
+    // EDIT HERE
+    //int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
+    int a =0;
       return a;
   }
 
@@ -510,21 +165,52 @@ int process(int &printCheck, int &i, string &s, string &s1){
   }
 }
 
-
+// main function to process
 int main(int argc, char** argv){
+
+
 
   rowAccessDelay = atoi(argv[1]);
   columnAccessDelay = atoi(argv[2]);
-  string input = argv[3];
+  //string input = argv[3];
+
+  int N; // number of CPU cores
+  int M; // Number of cycles
+
+  cout<< " Enter the number of CPU cores: ";
+  cin>> N;
+  string input[N];
+  cout<< "\n Enter the simulation time (number of cycles): ";
+  cin>> M;
+  int m = M;
+  cout<< "\n Enter the names of MIPS files: ";
+  for(int i=0; i<N; i++){
+    cin>> input[i];
+  } // inputting file names
+
+  cout<< "Successfully inputted all files. \n";
+  // idk i just couldn't initiliase size in global variable before taking N as input. maybe i just suck at it
+  vector<vector<int>> register_set1( N , vector<int> (32, 0));
+  vector<vector<int>> previous_register_set1( N , vector<int> (32, 0));
+  vector<unordered_map<string, int>> jumpMap1(N);
+  int countDown[N] = {0}; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
+
+  register_set = register_set1;
+  previous_register_set = previous_register_set1;
+  jumpMap = jumpMap1;
   //stores the current line in the input
   string line;
 
-
+  // making an object to open multiple files
   //storing all the commands in a vector
-  ifstream myfile(input);
+  cout << "Going in the ifstream loop \n";
+for(int k= 0; k<N; k++){
+
+  ifstream myfile(input[k]);
+  cout << "step 1";
   while(getline(myfile, line)){
     if(memory_program<100000){
-      instruction_set.push_back(line);
+      instruction_set[k].push_back(line);
       memory_program+=4;
     }
     else{
@@ -532,13 +218,21 @@ int main(int argc, char** argv){
       return 0;
     }
   }
-   for(int i=0; i<instruction_set.size(); i++){
-     donecheck.push_back("not");
+  cout<< "step 2";
+   for(int i=0; i<instruction_set[i].size(); i++){
+     donecheck[k].push_back("not");
    }
 
+   for(int j=0; j<32; j++){
+     (register_set[k])[j] = 0;
+     (previous_register_set[k])[j] = 0;
+   }
+   myfile.close();
+}
+  cout << "Coming out of the ifstream loop \n";
   //cout << donecheck.size() << endl;
 
-  int i=0;
+  int i[N]={0};
 
   //The number of instructions
   instruction=0;
@@ -549,11 +243,14 @@ int main(int argc, char** argv){
   //Looping through the code and storing the name of all the labels
   int rand= 0;
 
-  while(rand<instruction_set.size()){
-    string s= instruction_set[rand];
+// some optimisation for multiple files
+for(int i= 0; i<N; i++){
+
+  while(rand<instruction_set[i].size()){
+    string s= instruction_set[i][rand];
     //method to remove the whitespaces
     s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
-
+    instruction_set[i][rand] = s;
     if(s==""){
           rand=rand+1;
           continue;
@@ -561,7 +258,7 @@ int main(int argc, char** argv){
 
     else if(s.substr(s.length()-1,1) == ":"){
         //jumpMap[s.substr(0, s.length()-1)] = rand;
-        jumpMap.insert(make_pair(s.substr(0, s.length()-1), rand+1));
+        jumpMap[i].insert(make_pair(s.substr(0, s.length()-1), rand+1));
         //cout << s.substr(0, s.length()-1) << endl;
         //cout << jumpMap.at(s.substr(0, s.length()-1)) << endl;
         rand=rand+1;
@@ -572,41 +269,61 @@ int main(int argc, char** argv){
     }
 
   }
+  rand = 0;
+}
 
   //cout << rand;
+  // main loop
+// changing it from instruction wise to clock cycle wise; m = M
+// i[j] denotes the line number we're at at jth file
+  while(m > 0){
 
-  while(i< instruction_set.size()){
-    previous_register_set = register_set;
-    string s= instruction_set[i];
-    s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
-    string s1 = s;
-    if(donecheck[i]=="done"){
-      i=i+1;
-      continue;
-    }
+    for(int q=0; q< N; q++){
+      previous_register_set[q] = register_set[q];
 
-    if(s.size()>0 && s.substr(0,1)== "j"){
-      string help= s.substr(1,s.size()-1);
-      //cout << help << endl;
+      if(countDown[q] == 0){
+        string s = instruction_set[q][i[q]];
 
-      int k= jumpMap.at(help);
-      for(int r=k; r< instruction_set.size(); r++){
-        donecheck[r]= "not";
+        //s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end()); // already did it above
+        string s1 = s;
+        if(donecheck[q][i[q]]=="done"){
+          i[q]=i[q]+1;
+          continue;
+        }
+
+        if(s.size()>0 && s.substr(0,1)== "j"){
+          string help= s.substr(1,s.size()-1);
+          //cout << help << endl;
+
+          int k= jumpMap[q].at(help);
+          for(int r=k; r< instruction_set.size(); r++){
+            donecheck[q][r]= "not";
+          }
+        }
+
+        int k= process(printCheck, i[q], s, s1, q);
+        if(k==2){continue;}
+        else if(k==0){return 0;}
+
+
+
+        if(s.substr(0,2)!= "sw" && s.substr(0,2)!= "lw" && s.substr(0,3)!= "bne" && s.substr(0,3)!= "beq" && s.substr(0,1)!= "j") {
+          //cout << "Cycle " << clockNumber-saveCycles << ": ";
+          print_register(register_set[q], previous_register_set[q]);
       }
-    }
 
-    int k= process(printCheck, i, s, s1);
-    if(k==2){continue;}
-    else if(k==0){return 0;}
+      else {
+        countDown[q]--;
+      }
 
-
-
-    if(s.substr(0,2)!= "sw" && s.substr(0,2)!= "lw" && s.substr(0,3)!= "bne" && s.substr(0,3)!= "beq" && s.substr(0,1)!= "j") {
-      cout << "Cycle " << clockNumber-saveCycles << ": ";
-      print_register(register_set, previous_register_set);
-    }
+      }
 
 //End of while loop
+  }
+
+  cout<< "Cycle number: " << (M - m) + 1 << endl;
+
+
 }
 
 
