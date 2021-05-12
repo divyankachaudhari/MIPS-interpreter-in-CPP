@@ -183,10 +183,11 @@ int main(int argc, char** argv){
   cout<< "\n Enter the simulation time (number of cycles): ";
   cin>> M;
   int m = M;
-  cout<< "\n Enter the names of MIPS files: ";
-  for(int i=0; i<N; i++){
-    cin>> input[i];
-  } // inputting file names
+  // cout<< "\n Enter the names of MIPS files: ";
+  // for(int i=0; i<N; i++){
+  //   cin>> input[i];
+  //   cout << endl <<  i << input[i] << endl;
+  // } // inputting file names
 
   cout<< "Successfully inputted all files. \n";
   // idk i just couldn't initiliase size in global variable before taking N as input. maybe i just suck at it
@@ -203,10 +204,17 @@ int main(int argc, char** argv){
 
   // making an object to open multiple files
   //storing all the commands in a vector
+//  string filename;
   cout << "Going in the ifstream loop \n";
 for(int k= 0; k<N; k++){
-
-  ifstream myfile(input[k]);
+  cout<<"In the loop" << endl;
+  cout << "Enter file number " << k << ": ";
+  //cin >> filename
+  cout << k+2;
+  string filename = argv[k+2];
+  cout <<"\n Your file name is " << filename;
+  //cout << input[k];
+  ifstream myfile(filename);
   cout << "step 1";
   while(getline(myfile, line)){
     if(memory_program<100000){
