@@ -21,7 +21,6 @@ Add [DONE] infront of done
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <string.h>
 #include <vector>
 #include <iomanip>
 #include <cctype>
@@ -33,8 +32,8 @@ using namespace std;
 // template< typename T >
 
 
-vector<vector<int>> register_set;
-vector<vector<int>> previous_register_set;
+vector<vector<int> > register_set;
+vector<vector<int> > previous_register_set;
 
 int data_counter= 0;
 int rowBufferUpdates = 0;
@@ -49,14 +48,14 @@ int instruction;
 
 vector<int> busyRegisters;
 vector<int> busyRegistersother;
-vector<vector<string>> donecheck;
+vector<vector<string> > donecheck;
 vector<int> busyMemories;
 vector<int> rows;
 int memory_program= 0;
 vector<int> DRAM_memory(1048576, -2147483647);
-vector<vector<string>> instruction_set;
+vector<vector<string> > instruction_set;
 vector<int> numbers;
-vector<unordered_map<string, int>> jumpMap;
+vector<unordered_map<string, int> > jumpMap;
 
 // process function which takes any line as input and then processes it
 int process(int &printCheck, int &i, string &s, string &s1, int q){
@@ -191,10 +190,10 @@ int main(int argc, char** argv){
 
   cout<< "Successfully inputted all files. \n";
   // idk i just couldn't initiliase size in global variable before taking N as input. maybe i just suck at it
-  vector<vector<int>> register_set1( N , vector<int> (32, 0));
-  vector<vector<int>> previous_register_set1( N , vector<int> (32, 0));
-  vector<unordered_map<string, int>> jumpMap1(N);
-  int countDown[N] = {0}; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
+  vector<vector<int> > register_set1( N , vector<int> (32, 0));
+  vector<vector<int> > previous_register_set1( N , vector<int> (32, 0));
+  vector<unordered_map<string, int> > jumpMap1(N);
+  int countDown[N]; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
 
   register_set = register_set1;
   previous_register_set = previous_register_set1;
@@ -210,9 +209,12 @@ for(int k= 0; k<N; k++){
   cout<<"In the loop" << endl;
   cout << "Enter file number " << k << ": ";
   //cin >> filename
-  cout << k+2;
-  string filename = argv[k+2];
-  cout <<"\n Your file name is " << filename;
+  cout << k+2 << endl;
+
+  string filename;
+  cin >> filename;
+  cout << "wow";
+  cout << " Your file name is " ;
   //cout << input[k];
   ifstream myfile(filename);
   cout << "step 1";
@@ -240,7 +242,7 @@ for(int k= 0; k<N; k++){
   cout << "Coming out of the ifstream loop \n";
   //cout << donecheck.size() << endl;
 
-  int i[N]={0};
+  int i[N];
 
   //The number of instructions
   instruction=0;
