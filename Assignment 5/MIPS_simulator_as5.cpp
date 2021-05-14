@@ -165,12 +165,12 @@ int process(int &printCheck, int &i, string &s, string &s1, int q){
 }
 
 // main function to process
-int main(int argc, char** argv){
+int main(){
 
 
 
-  rowAccessDelay = atoi(argv[1]);
-  columnAccessDelay = atoi(argv[2]);
+  rowAccessDelay = 2;
+  columnAccessDelay = 5;
   //string input = argv[3];
 
   int N; // number of CPU cores
@@ -178,7 +178,7 @@ int main(int argc, char** argv){
 
   cout<< " Enter the number of CPU cores: ";
   cin>> N;
-  string input[N];
+  //string inputi[N];
   cout<< "\n Enter the simulation time (number of cycles): ";
   cin>> M;
   int m = M;
@@ -187,6 +187,13 @@ int main(int argc, char** argv){
   //   cin>> input[i];
   //   cout << endl <<  i << input[i] << endl;
   // } // inputting file names
+  vector<string> r;
+  vector<vector<string> > a(N,r);
+  instruction_set= a;
+
+  vector<vector<string> > helper(N,r);
+  donecheck= helper;
+
 
   cout<< "Successfully inputted all files. \n";
   // idk i just couldn't initiliase size in global variable before taking N as input. maybe i just suck at it
@@ -204,41 +211,58 @@ int main(int argc, char** argv){
   // making an object to open multiple files
   //storing all the commands in a vector
 //  string filename;
-  cout << "Going in the ifstream loop \n";
-for(int k= 0; k<N; k++){
-  cout<<"In the loop" << endl;
-  cout << "Enter file number " << k << ": ";
-  //cin >> filename
-  cout << k+2 << endl;
+  
+   cout << "Going in the ifstream loop \n";
 
-  string filename;
-  cin >> filename;
-  cout << "wow";
-  cout << " Your file name is " ;
+    //int k=0;
+    for(int k= 0; k<N; k++){
+    cout<<"In the loop" << endl;
+    cout << "Enter file number " << k << ": ";
+    //cin >> filename
+    //cout << k+2 << endl;
+    string input;
+    cin >> input;
+    cout<<"filename: "<<input<<endl;
+
+    ifstream myfile(input);
+    cout<<"filename: "<<input<<endl;
+    //mstring filename= "input1.txt";
+    //cin >> filename;
+    
+    //cout << " Your file name is " ;
   //cout << input[k];
-  ifstream myfile(filename);
-  cout << "step 1";
-  while(getline(myfile, line)){
-    if(memory_program<100000){
-      instruction_set[k].push_back(line);
-      memory_program+=4;
-    }
-    else{
-      cout << "Instruction Memory Overflow" <<  endl;
-      return 0;
-    }
-  }
-  cout<< "step 2";
-   for(int i=0; i<instruction_set[i].size(); i++){
-     donecheck[k].push_back("not");
-   }
+    //cout << "step 1";
 
-   for(int j=0; j<32; j++){
-     (register_set[k])[j] = 0;
-     (previous_register_set[k])[j] = 0;
-   }
-   myfile.close();
-}
+
+    
+    while(getline(myfile, line)){
+      cout<<"line: "<<line<<endl;
+
+      if(memory_program<100000){
+        //vector<string> a;
+        instruction_set[k].push_back(line);
+        cout << instruction_set[k][0];
+        memory_program+=4;
+      }
+      else{
+        cout << "Instruction Memory Overflow" <<  endl;
+        return 0;
+      }
+    }
+
+ 
+    cout<< "step 2";
+     for(int i=0; i<instruction_set[k].size(); i++){
+       donecheck[k].push_back("not");
+       //cout << "ok" << endl;
+     }
+
+     for(int j=0; j<32; j++){
+       (register_set[k])[j] = 0;
+       (previous_register_set[k])[j] = 0;
+     }
+     myfile.close();
+  }
   cout << "Coming out of the ifstream loop \n";
   //cout << donecheck.size() << endl;
 
