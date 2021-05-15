@@ -56,6 +56,7 @@ vector<int> DRAM_memory(1048576, -2147483647);
 vector<vector<string> > instruction_set;
 vector<int> numbers;
 vector<unordered_map<string, int> > jumpMap;
+int countDown[N];
 
 // process function which takes any line as input and then processes it
 int process(int &printCheck, int &i, string &s, string &s1, int q){
@@ -146,6 +147,7 @@ int process(int &printCheck, int &i, string &s, string &s1, int q){
     //findNextRequests(i);
     //EDIT HERE
     //int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
+
     int a =0;
       return a;
   }
@@ -200,7 +202,7 @@ int main(){
   vector<vector<int> > register_set1( N , vector<int> (32, 0));
   vector<vector<int> > previous_register_set1( N , vector<int> (32, 0));
   vector<unordered_map<string, int> > jumpMap1(N);
-  int countDown[N]; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
+  countDown[N] = {0}; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
 
   register_set = register_set1;
   previous_register_set = previous_register_set1;
@@ -211,13 +213,13 @@ int main(){
   // making an object to open multiple files
   //storing all the commands in a vector
 //  string filename;
-  
+
    cout << "Going in the ifstream loop \n";
 
     //int k=0;
     for(int k= 0; k<N; k++){
     cout<<"In the loop" << endl;
-    cout << "Enter file number " << k << ": ";
+    cout << "Enter file number " << k +1 << ": ";
     //cin >> filename
     //cout << k+2 << endl;
     string input;
@@ -228,13 +230,13 @@ int main(){
     cout<<"filename: "<<input<<endl;
     //mstring filename= "input1.txt";
     //cin >> filename;
-    
+
     //cout << " Your file name is " ;
   //cout << input[k];
     //cout << "step 1";
 
 
-    
+
     while(getline(myfile, line)){
       cout<<"line: "<<line<<endl;
 
@@ -250,8 +252,8 @@ int main(){
       }
     }
 
- 
-    cout<< "step 2";
+
+    //cout<< "step 2";
      for(int i=0; i<instruction_set[k].size(); i++){
        donecheck[k].push_back("not");
        //cout << "ok" << endl;
@@ -263,7 +265,7 @@ int main(){
      }
      myfile.close();
   }
-  cout << "Coming out of the ifstream loop \n";
+  //cout << "Coming out of the ifstream loop \n";
   //cout << donecheck.size() << endl;
 
   int i[N];
@@ -311,13 +313,15 @@ for(int i= 0; i<N; i++){
 // changing it from instruction wise to clock cycle wise; m = M
 // i[j] denotes the line number we're at at jth file
   while(m > 0){
+    cout<< "Cycle number: " << (M - m) + 1 << endl;
+
 
     for(int q=0; q< N; q++){
       previous_register_set[q] = register_set[q];
 
       if(countDown[q] == 0){
         string s = instruction_set[q][i[q]];
-
+        cout <<"\n" << s;
         //s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end()); // already did it above
         string s1 = s;
         if(donecheck[q][i[q]]=="done"){
@@ -345,17 +349,17 @@ for(int i= 0; i<N; i++){
           //cout << "Cycle " << clockNumber-saveCycles << ": ";
           print_register(register_set[q], previous_register_set[q]);
       }
-
+    }
       else {
         countDown[q]--;
       }
 
-      }
+
 
 //End of while loop
   }
 
-  cout<< "Cycle number: " << (M - m) + 1 << endl;
+  m--;
 
 
 }
