@@ -56,7 +56,6 @@ vector<int> DRAM_memory(1048576, -2147483647);
 vector<vector<string> > instruction_set;
 vector<int> numbers;
 vector<unordered_map<string, int> > jumpMap;
-int countDown[N];
 
 // process function which takes any line as input and then processes it
 int process(int &printCheck, int &i, string &s, string &s1, int q){
@@ -202,7 +201,7 @@ int main(){
   vector<vector<int> > register_set1( N , vector<int> (32, 0));
   vector<vector<int> > previous_register_set1( N , vector<int> (32, 0));
   vector<unordered_map<string, int> > jumpMap1(N);
-  countDown[N] = {0}; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
+  int countDown[N] = {0}; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
 
   register_set = register_set1;
   previous_register_set = previous_register_set1;
@@ -321,7 +320,7 @@ for(int i= 0; i<N; i++){
 
       if(countDown[q] == 0){
         string s = instruction_set[q][i[q]];
-        cout <<"\n" << s;
+        //cout <<"\n" << s;
         //s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end()); // already did it above
         string s1 = s;
         if(donecheck[q][i[q]]=="done"){
