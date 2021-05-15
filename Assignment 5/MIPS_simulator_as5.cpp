@@ -63,10 +63,10 @@ int process(int &printCheck, int &i, string &s, string &s1, int q){
   //method to remove the whitespaces
   s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
 
-  if (printCheck == -1) {
-    cout<< "\nCycle description: \n" << endl;
-    printCheck++;
-  }
+  // if (printCheck == -1) {
+  //   cout<< "\nCycle description: \n" << endl;
+  //   printCheck++;
+  // }
   //s now contains the current line after removing whitespace
   if(s==""){
     i=i+1;
@@ -213,7 +213,7 @@ int main(){
   //storing all the commands in a vector
 //  string filename;
 
-   cout << "Going in the ifstream loop \n";
+  // cout << "Going in the ifstream loop \n";
 
     //int k=0;
     for(int k= 0; k<N; k++){
@@ -311,11 +311,16 @@ for(int i= 0; i<N; i++){
   // main loop
 // changing it from instruction wise to clock cycle wise; m = M
 // i[j] denotes the line number we're at at jth file
+int k[N];
+//int pointer[n] = {0};
   while(m > 0){
-    cout<< "Cycle number: " << (M - m) + 1 << endl;
+    cout<< "\n-- Cycle number: " << (M - m) + 1 << endl;
 
 
     for(int q=0; q< N; q++){
+      if(i[q] > instruction_set[q].size()){
+        continue;
+      }
       previous_register_set[q] = register_set[q];
 
       if(countDown[q] == 0){
@@ -338,14 +343,27 @@ for(int i= 0; i<N; i++){
           }
         }
 
-        int k= process(printCheck, i[q], s, s1, q);
-        if(k==2){continue;}
-        else if(k==0){return 0;}
+        k[q]= process(printCheck, i[q], s, s1, q);
+        //cout << "\n" << k[q];
+        int returnval = k[q];
+        while(returnval == 2 || returnval == 0){
+
+        if(returnval==2){
+          if(i[q] >instruction_set[q].size() ){
+            break;
+          }
+          s = instruction_set[q][i[q]];
+          returnval = process(printCheck, i[q], s, s1, q);
+        }
+        else if(returnval==0){return 0;}
+      }
+      //cout << returnval;
 
 
 
         if(s.substr(0,2)!= "sw" && s.substr(0,2)!= "lw" && s.substr(0,3)!= "bne" && s.substr(0,3)!= "beq" && s.substr(0,1)!= "j") {
           //cout << "Cycle " << clockNumber-saveCycles << ": ";
+          cout<< "For program number " << q << ": " << endl;
           print_register(register_set[q], previous_register_set[q]);
       }
     }
