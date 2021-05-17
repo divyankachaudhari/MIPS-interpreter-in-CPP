@@ -39,12 +39,13 @@ vector<vector<int> > register_set;
 vector<vector<int> > previous_register_set;
 
 int data_counter= 0;
+int offset_val= 10000;
 int rowBufferUpdates = 0;
 int busyRegister = -1;
 int busyMemory = -1;
 vector<int> saveCycles;
 vector<vector<int> > saveCycles_vec;
-vector<vector<string> > Command_executed;
+vector<string> Command_executed;
 int rowAccessDelay;
 int columnAccessDelay;
 int clockNumber;
@@ -94,12 +95,14 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
   }
 
   else if(s.size()<2){
+    //cout << "1" << endl;
     cout << "Invalid Syntax at line:" << i+1<< endl;
     return 0;
 
   }
 
   else if(s.substr(0,1)!="j" && s.size()<7){
+    //cout << "2" << endl;
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
@@ -158,7 +161,7 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
     //findNextRequests(i);
     //cout << "OMP" << endl;
 
-    Command_executed.push_back(s);
+    //Command_executed[q].push_back(s);
 
     //EDIT HERE
     //int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
@@ -172,6 +175,7 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
 
     int helper=str_to_int(s.substr(6, k-6));
     if(helper == 2147483647){
+      //cout << "3" << endl;
         cout << "Invalid Syntax at line:"<<i+1 << endl;
         return 0;
     }
@@ -181,27 +185,163 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
       memoryLocation = str_to_int(s.substr(6, k-6));
     }
     else{
-      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[map(s.substr(k+1, 3))];
+      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[q][map(s.substr(k+1, 3))];
     }
-    MemoryManager.push_back(Memory_Location/1024);
+    MemoryManager.push_back(memoryLocation/1024);
     int a= lw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow);
-    MemoryManagerSavedCycles.push_back(saveCycles[q]);
+    //MemoryManagerSavedCycles.push_back(saveCycles[q]);
+    if(saveCycles_vec[q].size()== 0){
+      if(q==0){
 
-    saveCycles_vec[q]= 
+        saveCycles_vec[q].push_back(saveCycles[q]);
+      }
+      else{
+        int temp= saveCycles_vec[q-1][saveCycles_vec[q-1].size()-1] + saveCycles[q];
+        saveCycles_vec[q].push_back(temp);
+      }
+    }
 
+    else {
+      int temp= saveCycles_vec[q][saveCycles_vec[q].size()-1] + saveCycles[q];
+      saveCycles_vec[q].push_back(temp);
+    }
+   
+    MemoryManagerSavedCycles.push_back(saveCycles_vec[q][saveCycles_vec[q].size()-1]);
+
+
+    //cout << "Current Row lw: " << memoryLocation/1024 << endl;
     return a;
   }
 
   else if(s.substr(0,2)== "sw"){
-    //findNextRequests(i);
-    // EDIT HERE
+
+    //Command_executed[q].push_back(s);
+
+    //EDIT HERE
     //int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
-    Command_executed.push_back(s);
-    int a= lw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow);
+    int k=0;
+    for(int i= 0; i< s.size(); i++){
+      if(s.substr(i,1)=="("){
+        k= i;
+        break;
+      }
+    }
+
+    int helper=str_to_int(s.substr(6, k-6));
+    if(helper == 2147483647){
+      //cout << "4" << endl;
+        cout << "Invalid Syntax at line:"<<i+1 << endl;
+        return 0;
+    }
+
+    int memoryLocation;
+    if(s.substr(k+1, 5)== "$zero"){
+      memoryLocation = str_to_int(s.substr(6, k-6));
+    }
+    else{
+      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[q][map(s.substr(k+1, 3))];
+    }
+    //MemoryManager.push_back(memoryLocation/1024);
+    //cout << MemoryManager.size() << endl;
+    //cout << "R"
+    //cout << "This is memory val: " << memoryLocation << endl;
+    int helper10= MemoryManager.size();
+    for(int tem=0; tem<helper10; tem++){
+      //cout << tem << endl;
+      //cout << MemoryManager.size().endl;
+      if(tem== MemoryManager.size()-1){
+          //cout << " okkkkk " << endl;
+          Command_executed.push_back(s);
+          MemoryManager.push_back(memoryLocation/1024);
+          if(MemoryManager[MemoryManager.size()-2]== memoryLocation/1024){
+            //cout << "ok" << endl;
+
+            MemoryManagerSavedCycles.push_back(columnAccessDelay);
+          }
+          
+          else{
+            MemoryManagerSavedCycles.push_back(columnAccessDelay+ 2*rowAccessDelay);
+          }
+        }
+
+      else if(MemoryManager[tem]== memoryLocation/1024){
+
+        if(MemoryManager[tem+1]!= memoryLocation/1024){
+          MemoryManager.push_back(0);
+          MemoryManagerSavedCycles.push_back(0);
+          Command_executed.push_back("");
+          for(int helpi= MemoryManager.size()-1; helpi>tem+1; helpi--){
+            //MemoryManager[tem+1]= (memoryLocation/1024)
+            Command_executed[helpi]= Command_executed[helpi-1];
+            MemoryManager[helpi]= MemoryManager[helpi-1];
+            MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles[helpi-1];
+            //MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles+ columnAccessDelay;
+          }
+          Command_executed[tem+1]= s;
+          MemoryManagerSavedCycles[tem+1]= columnAccessDelay;
+          MemoryManager[tem+1]= memoryLocation/1024;
+          break;
+        }
+
+      }
+
+
+    }
+
+    if(MemoryManager.size()==0){
+      MemoryManager.push_back(memoryLocation/1024);
+      MemoryManagerSavedCycles.push_back(rowAccessDelay+columnAccessDelay);
+      Command_executed.push_back(s);
+    }
+
+
+    int a= sw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow);
+    //MemoryManagerSavedCycles.push_back(saveCycles[q]);
+
+    //int randtem= memoryLocation% offset_val;
+
+    // for(int i=0 i<saveCycles_vec.size(); i++){
+    //   for(int j=0; j<saveCycles_vec[i].size(); )
+    // }
+
+
+    // for(int i= 0; i<MemoryManager.size(); i++){
+    //   if()
+    // }
+
+
+
+
+    // for(int i= 0; i<MemoryManager.size(); i++){
+    //   if(MemoryManager[i]%offset_val== q){
+    //     saveCycles_vec[q].push_back()
+    //   }
+    // }
+
+    // if(saveCycles_vec[q].size()== 0){
+    //   if(q==0){
+    //     saveCycles_vec[q].push_back(saveCycles[q]);
+    //   }
+    //   else{
+    //     int temp= saveCycles_vec[q-1][saveCycles_vec[q-1].size()-1]+ saveCycles[q];
+    //     saveCycles_vec[q].push_back(temp);
+    //   }
+    // }
+
+    // else {
+    //   int temp= saveCycles_vec[q][saveCycles_vec[q].size()-1]+ saveCycles[q];
+    //   saveCycles_vec[q].push_back(temp);
+    // }
+   
+   // MemoryManagerSavedCycles.push_back(saveCycles_vec[q][saveCycles_vec[q].size()-1]);
+
+    cout << "Current Row sw: " << memoryLocation/1024 << endl;
+
     return a;
   }
 
   else{
+
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
   }
@@ -265,8 +405,10 @@ int main(){
 
   // cout << "Going in the ifstream loop \n";
 
+  //int k= 1024*1024/N;
     //int k=0;
     for(int k= 0; k<N; k++){
+    cout << k << endl;
     cout<<"In the loop" << endl;
     cout << "Enter file number " << k +1 << ": ";
     //cin >> filename
@@ -337,12 +479,12 @@ int main(){
   // for(int i=0; i<N; i++){
   //   MemoryManagerSavedCycles.push_back(extra1);
   // }
-  
+  //vector<string> extra2;
 
-  for(int i=0; i<N; i++){
-    vector<string> extra2;
-    Command_executed.push_back(extra2);
-  }
+  // for(int i=0; i<N; i++){
+    
+  //   Command_executed.push_back(extra2);
+  // }
 
   //The number of instructions
   instruction=0;
@@ -394,13 +536,51 @@ int k[N];
 
 
     for(int q=0; q< N; q++){
+
       //cout << "k" << endl;
 
-      for(int r=0; r<saveCycles_vec[q].size(); r++){
-          if(saveCycles_vec[q][r]==0){
-            cout << Command_executed[q][r];
-        }
-      }
+      //for(int r=0; r<MemoryManagerSavedCycles.size(); r++){
+          if(MemoryManagerSavedCycles.size()>0 && MemoryManagerSavedCycles[0]==0){
+            cout << Command_executed[0] << endl;
+
+            // string helps= Command_executed[0];
+            // int k=0;
+            // for(int i= 0; i< helps.size(); i++){
+            //   if(helps.substr(i,1)=="("){
+            //     k= i;
+            //     break;
+            //   }
+            // }
+
+            // int memoryLocation;
+            // if(helps.substr(k+1, 5)== "$zero"){
+            //   memoryLocation = str_to_int(helps.substr(6, k-6));
+            // }
+            // else{
+            //   memoryLocation = str_to_int(helps.substr(6, k-6))+ register_set[map(helps.substr(k+1, 3))];
+            // }
+
+            // if(helps.substr(0,2)== "lw"){
+            //   if(DRAM_memory[memoryLocation]== -2147483647){
+              
+            //     register_set[map(s.substr(2,3))]=0;
+            //     busyRegister = map(s.substr(2,3));
+                
+            //   }
+
+            //   else{
+            //     register_set[][map(s.substr(2,3))]=DRAM_memory[memoryLocation];
+            //   }
+            // }
+
+
+            Command_executed.erase(Command_executed.begin());
+            MemoryManagerSavedCycles.erase(MemoryManagerSavedCycles.begin());
+            MemoryManager.erase(MemoryManager.begin());
+            //MemoryManagerSavedCycles
+          }
+        //}
+      //}
       
 
       if(i[q] > instruction_set[q].size()){
@@ -434,13 +614,14 @@ int k[N];
         //cout << "\n" << k[q];
         int returnval = k[q];
         while(returnval == 2 || returnval == 0){
-
-        if(returnval==2){
+          //cout << "This is for program q" << q << endl;
+          if(returnval==2){
           if(i[q] >instruction_set[q].size() ){
             break;
           }
           s = instruction_set[q][i[q]];
           returnval = process(printCheck, i[q], s, s1, q, countDown);
+          //cout << returnval << endl;
         }
         else if(returnval==0){return 0;}
       }
@@ -462,13 +643,20 @@ int k[N];
 
 //End of while loop
   }
-  for(int q= 0; q<N; q++){
-    for(int r=0; r<saveCycles_vec[q].size(); r++){
-          saveCycles_vec[q][r]--;
-        }
-    //cout << saveCycles[q] << endl;
+  // for(int q= 0; q<N; q++){
+  //   for(int r=0; r<saveCycles_vec[q].size(); r++){
+  //         saveCycles_vec[q][r]--;
+  //         //cout << "Save cycles are " << r << ": " << saveCycles_vec[q][r] << endl;
+  //       }
+  //   //cout << saveCycles[q] << endl;
+  // }
+  if(MemoryManagerSavedCycles.size()>0){
+    MemoryManagerSavedCycles[0]--;
   }
 
+  //for(int i=0; i<MemoryManagerSavedCycles.size(); i++){
+    //cout << "This is the value " << i << " : " <<  MemoryManagerSavedCycles[i] << endl;
+  //}
 
   m--;
 

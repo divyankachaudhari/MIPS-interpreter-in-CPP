@@ -585,7 +585,7 @@ int slt(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   return 1;
 }
 
-int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int currentRow){
+int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int &currentRow){
   if(s.substr(5,1)!=","){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
@@ -622,13 +622,13 @@ int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec
   else{
     memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[map(s.substr(k+1, 3))];
   }
-  if(DRAM_memory[memoryLocation]== -2147483647){
-    //cout << "Trying to access uninitialised memory at line:" <<i+1 << endl;
-    register_set[map(s.substr(2,3))]=0;
-    busyRegister = map(s.substr(2,3));
-    //return 0;
-  }
-  else if(memoryLocation%4 != 0){
+  // if(DRAM_memory[memoryLocation]== -2147483647){
+  //   //cout << "Trying to access uninitialised memory at line:" <<i+1 << endl;
+  //   register_set[map(s.substr(2,3))]=0;
+  //   busyRegister = map(s.substr(2,3));
+  //   //return 0;
+  // }
+  if(memoryLocation%4 != 0){
     cout<< "Memory location not accesible at line: " << i+1 <<endl;
     return 0;
   }
@@ -636,10 +636,10 @@ int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec
   else if(memoryLocation> 1024*1024){
     cout << "Data memory overflow" << endl;
   }
-  else{
-    register_set[map(s.substr(2,3))]=DRAM_memory[memoryLocation];
-    busyRegister = map(s.substr(2,3));
-  }
+  //else{
+    //register_set[map(s.substr(2,3))]=DRAM_memory[memoryLocation];
+    //busyRegister = map(s.substr(2,3));
+  //}
   i+=1;
 
   //clockNumber+=1;
@@ -651,23 +651,27 @@ int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec
   cout << "DRAM request issued" <<endl;
   //int prevClock = clockNumber+1;
 
-  if(currentRow == -1){
-    saveCycles = columnAccessDelay+ rowAccessDelay;
-    //return 0;
-  }
-  else if(currentRow == memoryLocation/1024){
-    //clockNumber+= columnAccessDelay;
-    saveCycles = columnAccessDelay;
-  }
-  else if(currentRow != memoryLocation/1024){
-    //currentRow = memoryLocation/1024;
-    //rowBufferUpdates += 1;
-    //clockNumber+= rowAccessDelay;
-    //clockNumber+= rowAccessDelay;
-    //clockNumber+= columnAccessDelay;
-    saveCycles = 2*rowAccessDelay + columnAccessDelay;
-  }
-  saveCycles_vec.push_back(saveCycles);
+  // if(currentRow == -1){
+  //   //cout << "1" << endl;
+  //   currentRow = memoryLocation/1024;
+
+  //   saveCycles = columnAccessDelay+ rowAccessDelay;
+  //   //return 0;
+  // }
+  // else if(currentRow == memoryLocation/1024){
+  //   //clockNumber+= columnAccessDelay;
+  //   //cout << "2" << endl;
+  //   saveCycles = columnAccessDelay;
+  // }
+  // else if(currentRow != memoryLocation/1024){
+  //   currentRow = memoryLocation/1024;
+  //   //rowBufferUpdates += 1;
+  //   //clockNumber+= rowAccessDelay;
+  //   //clockNumber+= rowAccessDelay;
+  //   //clockNumber+= columnAccessDelay;
+  //   saveCycles = 2*rowAccessDelay + columnAccessDelay;
+  // }
+
   ///else {cout << "Something went wrong";}
 
   //cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";
@@ -678,7 +682,7 @@ int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec
 }
 
 
-int sw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int currentRow){
+int sw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int &currentRow){
 
   if(s.substr(5,1)!=","){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
@@ -724,35 +728,35 @@ int sw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec
   else if(memoryLocation> 1024*1024){
     cout << "Data memory overflow" << endl;
   }
-  else{
+  //else{
     //data_set.insert(make_pair(memoryLocation, register_set[map(s.substr(2,3))]));
 
-     DRAM_memory[memoryLocation] = register_set[map(s.substr(2,3))];
+     //DRAM_memory[memoryLocation] = register_set[map(s.substr(2,3))];
      //busyMemory = memoryLocation;
-  }
+  //}
   i+=1;
 
     cout << "DRAM request issued" <<endl;
   //int prevClock = clockNumber+1;
 
-  if(currentRow == -1){
-    saveCycles = columnAccessDelay+ rowAccessDelay;
-    //return 0;
-  }
-  else if(currentRow == memoryLocation/1024){
-    //clockNumber+= columnAccessDelay;
-    saveCycles = columnAccessDelay;
-  }
-  else if(currentRow != memoryLocation/1024){
-    //currentRow = memoryLocation/1024;
-    //rowBufferUpdates += 1;
-    //clockNumber+= rowAccessDelay;
-    //clockNumber+= rowAccessDelay;
-    //clockNumber+= columnAccessDelay;
-    saveCycles = 2*rowAccessDelay + columnAccessDelay;
-  }
+  // if(currentRow == -1){
+  //   saveCycles = columnAccessDelay+ rowAccessDelay;
+  //   currentRow= memoryLocation/1024;
+  //   //return 0;
+  // }
+  // else if(currentRow == memoryLocation/1024){
+  //   //clockNumber+= columnAccessDelay;
+  //   saveCycles = columnAccessDelay;
+  // }
+  // else if(currentRow != memoryLocation/1024){
+  //   currentRow = memoryLocation/1024;
+  //   //rowBufferUpdates += 1;
+  //   //clockNumber+= rowAccessDelay;
+  //   //clockNumber+= rowAccessDelay;
+  //   //clockNumber+= columnAccessDelay;
+  //   saveCycles = 2*rowAccessDelay + columnAccessDelay;
+  // }
 
-  saveCycles_vec.push_back(saveCycles);
   //else {cout << "Something went wrong";}
 
   //cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";

@@ -1,16 +1,20 @@
-main:
+main:	
+
+
+
+
+
+
 	addi $s0, $zero, 1000
 
 	addi $s1, $zero, 2500
 	addi $t0, $zero, 1
 	sw $t0, 1000($t2)
 	addi $t1, $zero, 2
-	lw $t1, 1000($t2)
+	sw $t0, 1000($s0)
+	sw $t1, 1000($t2)
 	addi $t2, $zero, 3
 	addi $t3, $zero, 4
-
-loop:
 	addi $s1, $zero, 2500
 	addi $t0, $zero, 1
-
 exit:
