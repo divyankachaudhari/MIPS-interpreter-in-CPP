@@ -1,0 +1,281 @@
+-- Cycle number: 1
+For program number 0: 
+$s0 = 000003e8
+For program number 1: 
+$s0 = 000003e8
+
+-- Cycle number: 2
+For program number 0: 
+$s1 = 000009c4
+For program number 1: 
+$s1 = 000009c4
+
+-- Cycle number: 3
+For program number 0: 
+$t0 = 00000001
+For program number 1: 
+$t3 = 00000028
+
+-- Cycle number: 4
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+For program number 1: 
+No change in value of register
+
+-- Cycle number: 5
+For program number 0: 
+$t1 = 00000002
+
+-- Cycle number: 6
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 7
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 8
+For program number 0: 
+$t2 = 00000004
+
+-- Cycle number: 9
+For program number 0: 
+$t3 = 00000004
+
+-- Cycle number: 10
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 11
+Program: 0 Memory 1000: 1
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 12
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 13
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 14
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 15
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 16
+Program: 0 Memory 1000: 2
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 17
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 18
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 19
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 20
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 21
+Program: 0 Memory 1004: 1
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 22
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 23
+The Memory Manager is now in waiting
+DRAM request issued
+No change in value of register
+
+-- Cycle number: 24
+For program number 0: 
+$t2 = 00000003
+
+-- Cycle number: 25
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 26
+Program: 0 Memory 1004: 2
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 27
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 28
+For program number 0: 
+No change in value of register
+
+-- Cycle number: 29
+
+-- Cycle number: 30
+
+-- Cycle number: 31
+Program: 0 Memory 1004: 1
+
+-- Cycle number: 32
+
+-- Cycle number: 33
+
+-- Cycle number: 34
+
+-- Cycle number: 35
+
+-- Cycle number: 36
+Program: 0 Memory 1004: 2
+
+-- Cycle number: 37
+
+-- Cycle number: 38
+
+-- Cycle number: 39
+
+-- Cycle number: 40
+
+-- Cycle number: 41
+
+-- Cycle number: 42
+
+-- Cycle number: 43
+
+-- Cycle number: 44
+
+-- Cycle number: 45
+
+-- Cycle number: 46
+Program: 0 Memory 2000: 1
+
+-- Cycle number: 47
+
+-- Cycle number: 48
+
+-- Cycle number: 49
+
+-- Cycle number: 50
+
+-- Cycle number: 51
+
+-- Cycle number: 52
+
+-- Cycle number: 53
+
+-- Cycle number: 54
+Program: 0 Memory 2000: 1
+
+-- Cycle number: 55
+
+-- Cycle number: 56
+
+-- Cycle number: 57
+
+-- Cycle number: 58
+
+-- Cycle number: 59
+
+-- Cycle number: 60
+
+-- Cycle number: 61
+
+-- Cycle number: 62
+
+-- Cycle number: 63
+Program: 0 Memory 2000: 1
+
+-- Cycle number: 64
+
+-- Cycle number: 65
+
+-- Cycle number: 66
+
+-- Cycle number: 67
+
+-- Cycle number: 68
+
+-- Cycle number: 69
+
+-- Cycle number: 70
+
+-- Cycle number: 71
+
+-- Cycle number: 72
+
+-- Cycle number: 73
+
+-- Cycle number: 74
+
+-- Cycle number: 75
+
+-- Cycle number: 76
+
+-- Cycle number: 77
+
+-- Cycle number: 78
+
+-- Cycle number: 79
+
+-- Cycle number: 80
+
+-- Cycle number: 81
+
+-- Cycle number: 82
+
+-- Cycle number: 83
+
+-- Cycle number: 84
+
+-- Cycle number: 85
+
+-- Cycle number: 86
+
+-- Cycle number: 87
+
+-- Cycle number: 88
+
+-- Cycle number: 89
+
+-- Cycle number: 90
+
+-- Cycle number: 91
+
+-- Cycle number: 92
+
+-- Cycle number: 93
+
+-- Cycle number: 94
+
+-- Cycle number: 95
+
+-- Cycle number: 96
+
+-- Cycle number: 97
+
+-- Cycle number: 98
+
+-- Cycle number: 99
+
+-- Cycle number: 100
