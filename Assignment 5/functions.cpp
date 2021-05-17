@@ -202,10 +202,10 @@ int add(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   }
   i+=1;
 
-  if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(11,3))!= busyRegister ){
-    saveCycles--;
-  }
-  else {clockNumber+=1; saveCycles =0;}
+  // if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(11,3))!= busyRegister ){
+  //   saveCycles--;
+  // }
+  // else {clockNumber+=1; saveCycles =0;}
   return 1;
 }
 
@@ -240,10 +240,10 @@ int addi(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister
 
   			i+=1;
 
-        if(saveCycles > 0 && map(s.substr(4,3))!= busyRegister && map(s.substr(8,3))!= busyRegister){
-          saveCycles--;
-        }
-        else {clockNumber+=1; saveCycles =0;}
+        // if(saveCycles > 0 && map(s.substr(4,3))!= busyRegister && map(s.substr(8,3))!= busyRegister){
+        //   saveCycles--;
+        // }
+        // else {clockNumber+=1; saveCycles =0;}
 
         //cout << "The clock number is:" << clockNumber << endl;
 
@@ -281,10 +281,10 @@ int sub(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   }
   i+=1;
 
-  if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(11,3))!= busyRegister ){
-    saveCycles--;
-  }
-  else {clockNumber+=1; saveCycles =0;}
+  // if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(11,3))!= busyRegister ){
+  //   saveCycles--;
+  // }
+  // else {clockNumber+=1; saveCycles =0;}
   return 1;
 }
 
@@ -319,10 +319,10 @@ int mul(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   }
   i+=1;
 
-  if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(11,3))!= busyRegister ){
-    saveCycles--;
-  }
-  else {clockNumber+=1; saveCycles =0;}
+  // if(saveCycles > 0 && map(s.substr(3,3))!= busyRegister && map(s.substr(7,3))!= busyRegister && map(s.substr(11,3))!= busyRegister ){
+  //   saveCycles--;
+  // }
+  // else {clockNumber+=1; saveCycles =0;}
   return 1;
 }
 
@@ -585,7 +585,7 @@ int slt(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
   return 1;
 }
 
-int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &rowBufferUpdates, vector<int> &DRAM_memory){
+int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int currentRow){
   if(s.substr(5,1)!=","){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
     return 0;
@@ -623,8 +623,10 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
     memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[map(s.substr(k+1, 3))];
   }
   if(DRAM_memory[memoryLocation]== -2147483647){
-    cout << "Trying to access uninitialised memory at line:" <<i+1 << endl;
-    return 0;
+    //cout << "Trying to access uninitialised memory at line:" <<i+1 << endl;
+    register_set[map(s.substr(2,3))]=0;
+    busyRegister = map(s.substr(2,3));
+    //return 0;
   }
   else if(memoryLocation%4 != 0){
     cout<< "Memory location not accesible at line: " << i+1 <<endl;
@@ -640,42 +642,43 @@ int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
   }
   i+=1;
 
-  clockNumber+=1;
+  //clockNumber+=1;
 
-  /// Printing
+   //Printing
   //cout << "The clock number is:" << clockNumber << endl;
 
 
-  cout << "Cycle " << clockNumber << ": " << "DRAM request issued" <<endl;
-  int prevClock = clockNumber+1;
+  cout << "DRAM request issued" <<endl;
+  //int prevClock = clockNumber+1;
 
   if(currentRow == -1){
-    cout<< "Uninitilised value is being accessed" << endl;
-    return 0;
+    saveCycles = columnAccessDelay+ rowAccessDelay;
+    //return 0;
   }
   else if(currentRow == memoryLocation/1024){
-    clockNumber+= columnAccessDelay;
+    //clockNumber+= columnAccessDelay;
     saveCycles = columnAccessDelay;
   }
   else if(currentRow != memoryLocation/1024){
-    currentRow = memoryLocation/1024;
-    rowBufferUpdates += 1;
-    clockNumber+= rowAccessDelay;
-    clockNumber+= rowAccessDelay;
-    clockNumber+= columnAccessDelay;
+    //currentRow = memoryLocation/1024;
+    //rowBufferUpdates += 1;
+    //clockNumber+= rowAccessDelay;
+    //clockNumber+= rowAccessDelay;
+    //clockNumber+= columnAccessDelay;
     saveCycles = 2*rowAccessDelay + columnAccessDelay;
   }
-  else {cout << "Something went wrong";}
+  saveCycles_vec.push_back(saveCycles);
+  ///else {cout << "Something went wrong";}
 
-  cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";
+  //cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";
    print_register(register_set, previous_register_set);
-   previous_register_set = register_set;
+   //previous_register_set = register_set;
    return 1;
 
 }
 
 
-int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &busyMemory, int &rowBufferUpdates, vector<int> &DRAM_memory){
+int sw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int currentRow){
 
   if(s.substr(5,1)!=","){
     cout << "Invalid Syntax at line:"<<i+1 << endl;
@@ -725,43 +728,35 @@ int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDe
     //data_set.insert(make_pair(memoryLocation, register_set[map(s.substr(2,3))]));
 
      DRAM_memory[memoryLocation] = register_set[map(s.substr(2,3))];
-     busyMemory = memoryLocation;
+     //busyMemory = memoryLocation;
   }
   i+=1;
 
-  clockNumber+=1;
-  /// Printing
+    cout << "DRAM request issued" <<endl;
+  //int prevClock = clockNumber+1;
 
-  cout << "Cycle " << clockNumber << ": " << "DRAM request issued" <<endl;
-  int prevClock = clockNumber+1;
   if(currentRow == -1){
-    currentRow = memoryLocation/1024;
-    rowBufferUpdates += 1;
-    clockNumber+= rowAccessDelay;
-    clockNumber+= columnAccessDelay;
-    saveCycles = rowAccessDelay + columnAccessDelay;
+    saveCycles = columnAccessDelay+ rowAccessDelay;
+    //return 0;
   }
   else if(currentRow == memoryLocation/1024){
-
-    clockNumber+= columnAccessDelay;
+    //clockNumber+= columnAccessDelay;
     saveCycles = columnAccessDelay;
   }
   else if(currentRow != memoryLocation/1024){
-    currentRow = memoryLocation/1024;
-    rowBufferUpdates += 1;
-    clockNumber+= rowAccessDelay;
-    clockNumber+= rowAccessDelay;
-    clockNumber+= columnAccessDelay;
+    //currentRow = memoryLocation/1024;
+    //rowBufferUpdates += 1;
+    //clockNumber+= rowAccessDelay;
+    //clockNumber+= rowAccessDelay;
+    //clockNumber+= columnAccessDelay;
     saveCycles = 2*rowAccessDelay + columnAccessDelay;
   }
-  else{
-    cout << "Something went wrong";
-    return 0;
-  }
 
-  //cout << "The clock number is:" << clockNumber << endl;
+  saveCycles_vec.push_back(saveCycles);
+  //else {cout << "Something went wrong";}
 
-  cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";
-  cout<< "Memory address from " << memoryLocation << "-" << memoryLocation+3 << " = " << DRAM_memory[memoryLocation] <<endl;
-  return 1;
+  //cout << "Cycle " << prevClock<< "-" << clockNumber << ": ";
+   print_register(register_set, previous_register_set);
+   //previous_register_set = register_set;
+   return 1;
 }

@@ -1,15 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 /*
-Add [DONE] infront of done
-
-1. Change register names [DONE]
-2. Change the labels for jump, etc. [DONE]
-3. Change offsets [DONE]
-4. For empty line and comment, DON'T BREAK findNextRequests
-5. Check $zero, etc in instructions other than addi
-6. Check bne, beq which runs infinite loop [DONE]
-7. Output correct number of instructions [DONE]
-
+//TO DO
+//1. Code should not end if one of the cores has a error??
+//2. Accessing memory should be offset
+//3. Memory division and allotment
+//4. Branch Change commands
+//5. Change the map
+//6. Add appropriate print commands for lw and sw
+//7. lw command and another command should not collide
 
 
 
@@ -31,6 +29,11 @@ using namespace std;
 
 // template< typename T >
 
+//--------------
+
+// Assuming that we go into the sw lw loop only if DRAM has allowed it
+
+//--------------
 
 vector<vector<int> > register_set;
 vector<vector<int> > previous_register_set;
@@ -39,7 +42,9 @@ int data_counter= 0;
 int rowBufferUpdates = 0;
 int busyRegister = -1;
 int busyMemory = -1;
-int saveCycles = 0;
+vector<int> saveCycles;
+vector<vector<int> > saveCycles_vec;
+vector<vector<string> > Command_executed;
 int rowAccessDelay;
 int columnAccessDelay;
 int clockNumber;
@@ -49,16 +54,22 @@ int instruction;
 vector<int> busyRegisters;
 vector<int> busyRegistersother;
 vector<vector<string> > donecheck;
+vector<vector<int> > depends;
 vector<int> busyMemories;
 vector<int> rows;
 int memory_program= 0;
+
+vector<int> MemoryManager;
+vector<int> MemoryManagerSavedCycles;
+
+
 vector<int> DRAM_memory(1048576, -2147483647);
 vector<vector<string> > instruction_set;
 vector<int> numbers;
 vector<unordered_map<string, int> > jumpMap;
 
 // process function which takes any line as input and then processes it
-int process(int &printCheck, int &i, string &s, string &s1, int q){
+int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& countDown){
 
   //method to remove the whitespaces
   s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
@@ -94,69 +105,100 @@ int process(int &printCheck, int &i, string &s, string &s1, int q){
   }
 
   else if(s.substr(0,3)=="add" && s.substr(0,4)!= "addi"){
-    int a = add(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
+    int a = add(s,clockNumber,saveCycles[q],i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,4)== "addi"){
-    int a = addi(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
+    //cout << "wow" << endl;
+    int a = addi(s,clockNumber,saveCycles[q] ,i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,3)=="sub"){
-    int a = sub(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
+    int a = sub(s,clockNumber,saveCycles[q],i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,3)=="mul"){
-    int a = mul(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
+    int a = mul(s,clockNumber,saveCycles[q],i, busyRegister,register_set[q]);
     return a;
     instruction+=1;
   }
 
   else if(s.substr(0,1)=="j"){
-    int a = j(i, s, clockNumber, saveCycles, jumpMap[q]);
+    int a = j(i, s, clockNumber, saveCycles[q], jumpMap[q]);
     return a;
     instruction+=1;
 
   }
 
   else if(s.substr(0,3)== "beq"){
-    int a = beq(s,clockNumber,saveCycles,i, busyRegister,register_set[q], jumpMap[q], donecheck[q]);
+    int a = beq(s,clockNumber,saveCycles[q],i, busyRegister,register_set[q], jumpMap[q], donecheck[q]);
       return a;
       instruction+=1;
   }
 
   else if(s.substr(0,3)== "bne"){
-    int a = bne(s,clockNumber,saveCycles,i, busyRegister,register_set[q], jumpMap[q], donecheck[q]);
+    int a = bne(s,clockNumber,saveCycles[q],i, busyRegister,register_set[q], jumpMap[q], donecheck[q]);
       return a;
       instruction+=1;
   }
 
   else if(s.substr(0,3)== "slt"){
-    int a = slt(s,clockNumber,saveCycles,i, busyRegister,register_set[q]);
+    int a = slt(s,clockNumber,saveCycles[q],i, busyRegister,register_set[q]);
       return a;
       instruction+=1;
   }
 
   else if(s.substr(0,2)== "lw"){
     //findNextRequests(i);
+    //cout << "OMP" << endl;
+
+    Command_executed.push_back(s);
+
     //EDIT HERE
     //int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
+    int k=0;
+    for(int i= 0; i< s.size(); i++){
+      if(s.substr(i,1)=="("){
+        k= i;
+        break;
+      }
+    }
 
-    int a =0;
-      return a;
+    int helper=str_to_int(s.substr(6, k-6));
+    if(helper == 2147483647){
+        cout << "Invalid Syntax at line:"<<i+1 << endl;
+        return 0;
+    }
+
+    int memoryLocation;
+    if(s.substr(k+1, 5)== "$zero"){
+      memoryLocation = str_to_int(s.substr(6, k-6));
+    }
+    else{
+      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[map(s.substr(k+1, 3))];
+    }
+    MemoryManager.push_back(Memory_Location/1024);
+    int a= lw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow);
+    MemoryManagerSavedCycles.push_back(saveCycles[q]);
+
+    saveCycles_vec[q]= 
+
+    return a;
   }
 
   else if(s.substr(0,2)== "sw"){
     //findNextRequests(i);
     // EDIT HERE
     //int a = efficientProcess(currentRow,i, busyRegisters, busyMemories,rows, numbers);
-    int a =0;
-      return a;
+    Command_executed.push_back(s);
+    int a= lw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow);
+    return a;
   }
 
   else{
@@ -195,13 +237,21 @@ int main(){
   vector<vector<string> > helper(N,r);
   donecheck= helper;
 
+  vector<int> extra_int_vec;
+  vector<vector<int> > tempvec(N,extra_int_vec);
+  depends= tempvec;
+
 
   cout<< "Successfully inputted all files. \n";
   // idk i just couldn't initiliase size in global variable before taking N as input. maybe i just suck at it
   vector<vector<int> > register_set1( N , vector<int> (32, 0));
   vector<vector<int> > previous_register_set1( N , vector<int> (32, 0));
   vector<unordered_map<string, int> > jumpMap1(N);
-  int countDown[N] = {0}; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
+  vector<int> countDown; // using this variable to keep track of the clock cycles after which we need to move on to the next command in that file. If it's 0 then we'll move on, else the number there denotes the amount of cycles we have to wait. We'll decrement this at every clock cycle
+
+  for(int i=0; i<N; i++){
+    countDown.push_back(0);
+  }
 
   register_set = register_set1;
   previous_register_set = previous_register_set1;
@@ -269,6 +319,31 @@ int main(){
 
   int i[N];
 
+  for(int i=0; i<N; i++){
+    saveCycles.push_back(-1);
+  }
+
+  vector<int> extra1;
+  for(int i=0; i<N; i++){
+    saveCycles_vec.push_back(extra1);
+  }
+
+  // vector<int> extra1;
+  // for(int i=0; i<N; i++){
+  //   MemoryManager.push_back(extra1);
+  // }
+
+  // vector<int> extra1;
+  // for(int i=0; i<N; i++){
+  //   MemoryManagerSavedCycles.push_back(extra1);
+  // }
+  
+
+  for(int i=0; i<N; i++){
+    vector<string> extra2;
+    Command_executed.push_back(extra2);
+  }
+
   //The number of instructions
   instruction=0;
   clockNumber =0;
@@ -312,13 +387,24 @@ for(int i= 0; i<N; i++){
 // changing it from instruction wise to clock cycle wise; m = M
 // i[j] denotes the line number we're at at jth file
 int k[N];
+
 //int pointer[n] = {0};
   while(m > 0){
     cout<< "\n-- Cycle number: " << (M - m) + 1 << endl;
 
 
     for(int q=0; q< N; q++){
+      //cout << "k" << endl;
+
+      for(int r=0; r<saveCycles_vec[q].size(); r++){
+          if(saveCycles_vec[q][r]==0){
+            cout << Command_executed[q][r];
+        }
+      }
+      
+
       if(i[q] > instruction_set[q].size()){
+        //cout << "we continue" << endl;
         continue;
       }
       previous_register_set[q] = register_set[q];
@@ -332,6 +418,7 @@ int k[N];
           i[q]=i[q]+1;
           continue;
         }
+        
 
         if(s.size()>0 && s.substr(0,1)== "j"){
           string help= s.substr(1,s.size()-1);
@@ -343,7 +430,7 @@ int k[N];
           }
         }
 
-        k[q]= process(printCheck, i[q], s, s1, q);
+        k[q]= process(printCheck, i[q], s, s1, q, countDown);
         //cout << "\n" << k[q];
         int returnval = k[q];
         while(returnval == 2 || returnval == 0){
@@ -353,7 +440,7 @@ int k[N];
             break;
           }
           s = instruction_set[q][i[q]];
-          returnval = process(printCheck, i[q], s, s1, q);
+          returnval = process(printCheck, i[q], s, s1, q, countDown);
         }
         else if(returnval==0){return 0;}
       }
@@ -375,6 +462,13 @@ int k[N];
 
 //End of while loop
   }
+  for(int q= 0; q<N; q++){
+    for(int r=0; r<saveCycles_vec[q].size(); r++){
+          saveCycles_vec[q][r]--;
+        }
+    //cout << saveCycles[q] << endl;
+  }
+
 
   m--;
 

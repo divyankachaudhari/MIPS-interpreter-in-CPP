@@ -37,9 +37,9 @@ int bne(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister,
 
 int slt(string &s, int &clockNumber, int &saveCycles, int &i, int &busyRegister, vector<int> &register_set);
 
-int lw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &rowBufferUpdates, vector<int> &DRAM_memory);
+int lw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int currentRow);
 
-int sw(string &s, int &clockNumber, int &saveCycles, int &i, int &columnAccessDelay, int &rowAccessDelay, int &currentRow, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, int &busyMemory, int &rowBufferUpdates, vector<int> &DRAM_memory);
+int sw(string &s, int &clockNumber, int &saveCycles, vector<int> &saveCycles_vec, int &i, int rowAccessDelay, int columnAccessDelay, int &busyRegister, vector<int> &register_set, vector<int> &previous_register_set, vector<int> &DRAM_memory, vector<int> &depends, int currentRow);
 
 
 
