@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include "functions.h"
+#define MEMORY_MANAGER_MAX 16
 using namespace std;
 
 // template< typename T >
@@ -39,7 +40,7 @@ vector<vector<int> > register_set;
 vector<vector<int> > previous_register_set;
 
 int data_counter= 0;
-int offset_val= 10000;
+int offset_val;
 int rowBufferUpdates = 0;
 int busyRegister = -1;
 int busyMemory = -1;
@@ -51,6 +52,7 @@ int columnAccessDelay;
 int clockNumber;
 int currentRow;
 int instruction;
+int memory_manager_wait;
 
 vector<int> busyRegisters;
 vector<int> busyRegistersother;
@@ -182,31 +184,86 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
 
     int memoryLocation;
     if(s.substr(k+1, 5)== "$zero"){
-      memoryLocation = str_to_int(s.substr(6, k-6));
+      memoryLocation = str_to_int(s.substr(6, k-6)) + q*offset_val;
     }
     else{
-      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[q][map(s.substr(k+1, 3))];
+      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[q][map(s.substr(k+1, 3))] + q*offset_val;
     }
-    MemoryManager.push_back(memoryLocation/1024);
-    int a= lw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow);
-    //MemoryManagerSavedCycles.push_back(saveCycles[q]);
-    if(saveCycles_vec[q].size()== 0){
-      if(q==0){
+    //MemoryManager.push_back(memoryLocation/1024);
 
-        saveCycles_vec[q].push_back(saveCycles[q]);
-      }
-      else{
-        int temp= saveCycles_vec[q-1][saveCycles_vec[q-1].size()-1] + saveCycles[q];
-        saveCycles_vec[q].push_back(temp);
-      }
+    if(MemoryManager.size()==MEMORY_MANAGER_MAX){
+      cout << "The Memory Manager is completely filled" << endl;
+      return 1;
     }
 
-    else {
-      int temp= saveCycles_vec[q][saveCycles_vec[q].size()-1] + saveCycles[q];
-      saveCycles_vec[q].push_back(temp);
+    cout << "The Memory Manager is now in waiting" << endl;
+      int helper10= MemoryManager.size();
+      for(int tem=0; tem<helper10; tem++){
+        if(tem==MemoryManager.size()-1){
+          memory_manager_wait= MemoryManager.size();
+        }
+
+        else{
+          if(MemoryManager[tem]== memoryLocation/1024){
+            memory_manager_wait= tem;
+          }
+        }
+      }
+
+    //int helper10= MemoryManager.size();
+
+    string v= "Program: " + to_string(q) + " Register " + s.substr(2,3) + ": " + to_string(DRAM_memory[memoryLocation]);
+
+    for(int tem=0; tem<helper10; tem++){
+      //cout << tem << endl;
+      //cout << MemoryManager.size().endl;
+      if(tem== MemoryManager.size()-1){
+          //cout << " okkkkk " << endl;
+          Command_executed.push_back(v);
+          MemoryManager.push_back(memoryLocation/1024);
+          if(MemoryManager[MemoryManager.size()-2]== memoryLocation/1024){
+            //cout << "ok" << endl;
+
+            MemoryManagerSavedCycles.push_back(columnAccessDelay+memory_manager_wait);
+          }
+          
+          else{
+            MemoryManagerSavedCycles.push_back(columnAccessDelay+ 2*rowAccessDelay+memory_manager_wait);
+          }
+        }
+
+      else if(MemoryManager[tem]== memoryLocation/1024){
+
+        if(MemoryManager[tem+1]!= memoryLocation/1024){
+          MemoryManager.push_back(0);
+          MemoryManagerSavedCycles.push_back(0);
+          Command_executed.push_back("");
+          for(int helpi= MemoryManager.size()-1; helpi>tem+1; helpi--){
+            //MemoryManager[tem+1]= (memoryLocation/1024)
+            Command_executed[helpi]= Command_executed[helpi-1];
+            MemoryManager[helpi]= MemoryManager[helpi-1];
+            MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles[helpi-1];
+            //MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles+ columnAccessDelay;
+          }
+          Command_executed[tem+1]= v;
+          MemoryManagerSavedCycles[tem+1]= columnAccessDelay;
+          MemoryManager[tem+1]= memoryLocation/1024;
+          break;
+        }
+
+      }
+
+
     }
-   
-    MemoryManagerSavedCycles.push_back(saveCycles_vec[q][saveCycles_vec[q].size()-1]);
+
+    if(MemoryManager.size()==0){
+      MemoryManager.push_back(memoryLocation/1024);
+      MemoryManagerSavedCycles.push_back(rowAccessDelay+columnAccessDelay);
+      Command_executed.push_back(v);
+    }
+
+
+    int a= lw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow, offset_val, q);
 
 
     //cout << "Current Row lw: " << memoryLocation/1024 << endl;
@@ -236,31 +293,58 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
 
     int memoryLocation;
     if(s.substr(k+1, 5)== "$zero"){
-      memoryLocation = str_to_int(s.substr(6, k-6));
+      memoryLocation = str_to_int(s.substr(6, k-6)) + q*offset_val;
     }
     else{
-      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[q][map(s.substr(k+1, 3))];
+      memoryLocation = str_to_int(s.substr(6, k-6))+ register_set[q][map(s.substr(k+1, 3))] + q*offset_val;
     }
     //MemoryManager.push_back(memoryLocation/1024);
     //cout << MemoryManager.size() << endl;
     //cout << "R"
     //cout << "This is memory val: " << memoryLocation << endl;
-    int helper10= MemoryManager.size();
+
+    //int memoryLocation = 
+
+    string v= "Program: " + to_string(q) + " Memory " + to_string(memoryLocation- q*offset_val) + ": "+ to_string(register_set[q][map(s.substr(2,3))]);
+
+    //int helper10= MemoryManager.size();
+
+    if(MemoryManager.size()==MEMORY_MANAGER_MAX){
+      cout << "The Memory Manager is completely filled" << endl;
+      return 1;
+    }
+
+
+    cout << "The Memory Manager is now in waiting" << endl;
+      int helper10= MemoryManager.size();
+      for(int tem=0; tem<helper10; tem++){
+        if(tem==MemoryManager.size()-1){
+          memory_manager_wait= MemoryManager.size();
+        }
+
+        else{
+          if(MemoryManager[tem]== memoryLocation/1024){
+            memory_manager_wait= tem;
+          }
+        }
+      }
+
+
     for(int tem=0; tem<helper10; tem++){
       //cout << tem << endl;
       //cout << MemoryManager.size().endl;
       if(tem== MemoryManager.size()-1){
           //cout << " okkkkk " << endl;
-          Command_executed.push_back(s);
+          Command_executed.push_back(v);
           MemoryManager.push_back(memoryLocation/1024);
           if(MemoryManager[MemoryManager.size()-2]== memoryLocation/1024){
             //cout << "ok" << endl;
 
-            MemoryManagerSavedCycles.push_back(columnAccessDelay);
+            MemoryManagerSavedCycles.push_back(columnAccessDelay+memory_manager_wait);
           }
           
           else{
-            MemoryManagerSavedCycles.push_back(columnAccessDelay+ 2*rowAccessDelay);
+            MemoryManagerSavedCycles.push_back(columnAccessDelay+ 2*rowAccessDelay+memory_manager_wait);
           }
         }
 
@@ -277,7 +361,7 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
             MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles[helpi-1];
             //MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles+ columnAccessDelay;
           }
-          Command_executed[tem+1]= s;
+          Command_executed[tem+1]= v;
           MemoryManagerSavedCycles[tem+1]= columnAccessDelay;
           MemoryManager[tem+1]= memoryLocation/1024;
           break;
@@ -291,11 +375,11 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
     if(MemoryManager.size()==0){
       MemoryManager.push_back(memoryLocation/1024);
       MemoryManagerSavedCycles.push_back(rowAccessDelay+columnAccessDelay);
-      Command_executed.push_back(s);
+      Command_executed.push_back(v);
     }
 
 
-    int a= sw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow);
+    int a= sw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow, offset_val, q);
     //MemoryManagerSavedCycles.push_back(saveCycles[q]);
 
     //int randtem= memoryLocation% offset_val;
@@ -335,7 +419,7 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
    
    // MemoryManagerSavedCycles.push_back(saveCycles_vec[q][saveCycles_vec[q].size()-1]);
 
-    cout << "Current Row sw: " << memoryLocation/1024 << endl;
+    //cout << "Current Row sw: " << memoryLocation/1024 << endl;
 
     return a;
   }
@@ -370,6 +454,9 @@ int main(){
   //   cin>> input[i];
   //   cout << endl <<  i << input[i] << endl;
   // } // inputting file names
+
+  offset_val= (1024*1024)/N;
+
   vector<string> r;
   vector<vector<string> > a(N,r);
   instruction_set= a;
@@ -382,7 +469,7 @@ int main(){
   depends= tempvec;
 
 
-  cout<< "Successfully inputted all files. \n";
+  //cout<< "Successfully inputted all files. \n";
   // idk i just couldn't initiliase size in global variable before taking N as input. maybe i just suck at it
   vector<vector<int> > register_set1( N , vector<int> (32, 0));
   vector<vector<int> > previous_register_set1( N , vector<int> (32, 0));
@@ -408,17 +495,17 @@ int main(){
   //int k= 1024*1024/N;
     //int k=0;
     for(int k= 0; k<N; k++){
-    cout << k << endl;
-    cout<<"In the loop" << endl;
+    //cout << k << endl;
+    //cout<<"In the loop" << endl;
     cout << "Enter file number " << k +1 << ": ";
     //cin >> filename
     //cout << k+2 << endl;
     string input;
     cin >> input;
-    cout<<"filename: "<<input<<endl;
+    //cout<<"filename: "<<input<<endl;
 
     ifstream myfile(input);
-    cout<<"filename: "<<input<<endl;
+    //cout<<"filename: "<<input<<endl;
     //mstring filename= "input1.txt";
     //cin >> filename;
 
@@ -429,12 +516,12 @@ int main(){
 
 
     while(getline(myfile, line)){
-      cout<<"line: "<<line<<endl;
+      //cout<<"line: "<<line<<endl;
 
       if(memory_program<100000){
         //vector<string> a;
         instruction_set[k].push_back(line);
-        cout << instruction_set[k][0];
+        //cout << instruction_set[k][0];
         memory_program+=4;
       }
       else{
