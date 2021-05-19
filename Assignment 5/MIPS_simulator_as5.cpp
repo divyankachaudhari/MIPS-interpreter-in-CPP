@@ -64,6 +64,8 @@ int memory_program= 0;
 
 vector<int> MemoryManager;
 vector<int> MemoryManagerSavedCycles;
+vector<int> MemoryManagerExact;
+vector<int> MemoryManagerRegister;
 
 
 vector<int> DRAM_memory(1048576, -2147483647);
@@ -196,6 +198,40 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
       return 1;
     }
 
+
+    int max= 0;
+    int current;
+    int temp= 0;
+    if( MemoryManager.size()>0){
+      current= MemoryManager[0];
+    }
+    for(int i=0; i<MemoryManager.size(); i++){
+      //current= MemoryManager[i];
+      if(MemoryManager[i]== current){
+        temp+=1;
+      }
+
+      else{
+        current= MemoryManager[i];
+        temp=0;
+      }
+
+      if(temp>max){
+        max= temp;
+      }
+    }
+
+    if(max>9){
+      cout << "Forcefully changing the row buffer to avoid starvation" << endl;
+      MemoryManager[0]= MemoryManager[max];
+      MemoryManagerRegister[0]= MemoryManagerRegister[max];
+      MemoryManagerSavedCycles[0]= MemoryManagerSavedCycles[max];
+      MemoryManagerExact[0] = MemoryManagerExact[max];
+      Command_executed[0]= Command_executed[max];
+    }
+
+
+
     cout << "The Memory Manager is now in waiting" << endl;
       int helper10= MemoryManager.size();
       for(int tem=0; tem<helper10; tem++){
@@ -209,17 +245,35 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
           }
         }
       }
-
+      string v;
     //int helper10= MemoryManager.size();
+    if(DRAM_memory[memory_program]== -2147483647){
+      v= "Program: " + to_string(q) + " Register " + s.substr(2,3) + ": " + to_string(0);
+    }
 
-    string v= "Program: " + to_string(q) + " Register " + s.substr(2,3) + ": " + to_string(DRAM_memory[memoryLocation]);
+    else{
+      v= "Program: " + to_string(q) + " Register " + s.substr(2,3) + ": " + to_string(DRAM_memory[memory_program]);
+    }
 
     for(int tem=0; tem<helper10; tem++){
       //cout << tem << endl;
+      //cout << tem << endl;
       //cout << MemoryManager.size().endl;
       if(tem== MemoryManager.size()-1){
+
+
           //cout << " okkkkk " << endl;
+          if(MemoryManagerRegister[MemoryManager.size()-1]== map(s.substr(2,3))){
+            cout << "Erasing the redundant lw command" << endl;
+            //cout << "ok"<< endl;
+            MemoryManagerRegister.erase(MemoryManagerRegister.begin()+MemoryManager.size()-1);
+            MemoryManager.erase(MemoryManager.begin()+MemoryManager.size()-1);
+            Command_executed.erase(Command_executed.begin()+MemoryManager.size()-1);
+            MemoryManagerSavedCycles.erase(MemoryManagerSavedCycles.begin()+MemoryManager.size()-1);
+          }
+
           Command_executed.push_back(v);
+          MemoryManagerRegister.push_back(map(s.substr(2,3)));
           MemoryManager.push_back(memoryLocation/1024);
           if(MemoryManager[MemoryManager.size()-2]== memoryLocation/1024){
             //cout << "ok" << endl;
@@ -234,18 +288,32 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
 
       else if(MemoryManager[tem]== memoryLocation/1024){
 
+        if(MemoryManagerRegister[MemoryManager.size()-1]== map(s.substr(2,3))){
+            cout << "Erasing the redundant lw command" << endl;
+            //cout << "ok"<< endl;
+            MemoryManagerRegister.erase(MemoryManagerRegister.begin()+MemoryManager.size()-1);
+            MemoryManager.erase(MemoryManager.begin()+MemoryManager.size()-1);
+            Command_executed.erase(Command_executed.begin()+MemoryManager.size()-1);
+            MemoryManagerSavedCycles.erase(MemoryManagerSavedCycles.begin()+MemoryManager.size()-1);
+          }
+
         if(MemoryManager[tem+1]!= memoryLocation/1024){
+
+
+          MemoryManagerRegister.push_back(0);
           MemoryManager.push_back(0);
           MemoryManagerSavedCycles.push_back(0);
           Command_executed.push_back("");
           for(int helpi= MemoryManager.size()-1; helpi>tem+1; helpi--){
             //MemoryManager[tem+1]= (memoryLocation/1024)
+            MemoryManagerRegister[helpi]= MemoryManagerRegister[helpi-1];
             Command_executed[helpi]= Command_executed[helpi-1];
             MemoryManager[helpi]= MemoryManager[helpi-1];
             MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles[helpi-1];
             //MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles+ columnAccessDelay;
           }
           Command_executed[tem+1]= v;
+          MemoryManagerRegister[tem+1]= map(s.substr(2,3));
           MemoryManagerSavedCycles[tem+1]= columnAccessDelay;
           MemoryManager[tem+1]= memoryLocation/1024;
           break;
@@ -257,6 +325,7 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
     }
 
     if(MemoryManager.size()==0){
+      MemoryManagerRegister.push_back(map(s.substr(2,3)));
       MemoryManager.push_back(memoryLocation/1024);
       MemoryManagerSavedCycles.push_back(rowAccessDelay+columnAccessDelay);
       Command_executed.push_back(v);
@@ -315,6 +384,38 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
     }
 
 
+    int max= 0;
+    int current;
+    int temp= 0;
+    if( MemoryManager.size()>0){
+      current= MemoryManager[0];
+    }
+    for(int i=0; i<MemoryManager.size(); i++){
+      //current= MemoryManager[i];
+      if(MemoryManager[i]== current){
+        temp+=1;
+      }
+
+      else{
+        current= MemoryManager[i];
+        temp=0;
+      }
+
+      if(temp>max){
+        max= temp;
+      }
+    }
+
+    if(max>9){
+      cout << "Forcefully changing the row buffer to avoid starvation" << endl;
+      MemoryManager[0]= MemoryManager[max];
+      MemoryManagerRegister[0]= MemoryManagerRegister[max];
+      MemoryManagerSavedCycles[0]= MemoryManagerSavedCycles[max];
+      MemoryManagerExact[0] = MemoryManagerExact[max];
+      Command_executed[0]= Command_executed[max];
+    }
+
+
     cout << "The Memory Manager is now in waiting" << endl;
       int helper10= MemoryManager.size();
       for(int tem=0; tem<helper10; tem++){
@@ -332,10 +433,23 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
 
     for(int tem=0; tem<helper10; tem++){
       //cout << tem << endl;
+      //cout << tem << endl;
       //cout << MemoryManager.size().endl;
       if(tem== MemoryManager.size()-1){
+
+
           //cout << " okkkkk " << endl;
+          if(MemoryManagerExact[MemoryManager.size()-1]== memoryLocation){
+            cout << "Erasing the redundant sw command" << endl;
+            //cout << "ok"<< endl;
+            MemoryManagerExact.erase(MemoryManagerExact.begin()+MemoryManager.size()-1);
+            MemoryManager.erase(MemoryManager.begin()+MemoryManager.size()-1);
+            Command_executed.erase(Command_executed.begin()+MemoryManager.size()-1);
+            MemoryManagerSavedCycles.erase(MemoryManagerSavedCycles.begin()+MemoryManager.size()-1);
+          }
+
           Command_executed.push_back(v);
+          MemoryManagerExact.push_back(memoryLocation);
           MemoryManager.push_back(memoryLocation/1024);
           if(MemoryManager[MemoryManager.size()-2]== memoryLocation/1024){
             //cout << "ok" << endl;
@@ -350,18 +464,33 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
 
       else if(MemoryManager[tem]== memoryLocation/1024){
 
+        if(MemoryManagerExact[tem]== memoryLocation){
+            cout << "Erasing the redundant sw command" << endl;
+            MemoryManagerExact.erase(MemoryManagerExact.begin()+MemoryManager.size()-1);
+            MemoryManager.erase(MemoryManager.begin()+MemoryManager.size()-1);
+            Command_executed.erase(Command_executed.begin()+MemoryManager.size()-1);
+            MemoryManagerSavedCycles.erase(MemoryManagerSavedCycles.begin()+MemoryManager.size()-1);
+            
+
+        }
+
         if(MemoryManager[tem+1]!= memoryLocation/1024){
+
+
+          MemoryManagerExact.push_back(0);
           MemoryManager.push_back(0);
           MemoryManagerSavedCycles.push_back(0);
           Command_executed.push_back("");
           for(int helpi= MemoryManager.size()-1; helpi>tem+1; helpi--){
             //MemoryManager[tem+1]= (memoryLocation/1024)
+            MemoryManagerExact[helpi]= MemoryManagerExact[helpi-1];
             Command_executed[helpi]= Command_executed[helpi-1];
             MemoryManager[helpi]= MemoryManager[helpi-1];
             MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles[helpi-1];
             //MemoryManagerSavedCycles[helpi]= MemoryManagerSavedCycles+ columnAccessDelay;
           }
           Command_executed[tem+1]= v;
+          MemoryManagerExact[tem+1]= memoryLocation;
           MemoryManagerSavedCycles[tem+1]= columnAccessDelay;
           MemoryManager[tem+1]= memoryLocation/1024;
           break;
@@ -373,11 +502,11 @@ int process(int &printCheck, int &i, string &s, string &s1, int q, vector<int>& 
     }
 
     if(MemoryManager.size()==0){
+      MemoryManagerExact.push_back(memoryLocation);
       MemoryManager.push_back(memoryLocation/1024);
       MemoryManagerSavedCycles.push_back(rowAccessDelay+columnAccessDelay);
       Command_executed.push_back(v);
     }
-
 
     int a= sw(s, clockNumber, saveCycles[q], saveCycles_vec[q], i, rowAccessDelay, columnAccessDelay, busyRegister, register_set[q], previous_register_set[q], DRAM_memory, depends[q], currentRow, offset_val, q);
     //MemoryManagerSavedCycles.push_back(saveCycles[q]);
@@ -517,6 +646,7 @@ int main(){
 
     while(getline(myfile, line)){
       //cout<<"line: "<<line<<endl;
+      //cout << line << endl;
 
       if(memory_program<100000){
         //vector<string> a;
@@ -612,12 +742,22 @@ for(int i= 0; i<N; i++){
 }
 
   //cout << rand;
+
   // main loop
 // changing it from instruction wise to clock cycle wise; m = M
 // i[j] denotes the line number we're at at jth file
 int k[N];
 
+//cout << N<< endl;
+  // for(int i=0; i<N; i++){
+  //   for(int j=0; j<instruction_set[i].size(); j++){
+  //     cout << i << " " << j << " " << instruction_set[i][j] << endl;
+  //   }
+  //   //cout << instructionCount[i]
+  //}
 //int pointer[n] = {0};
+  int clockCount;
+  int instructionCount;
   while(m > 0){
     cout<< "\n-- Cycle number: " << (M - m) + 1 << endl;
 
@@ -629,7 +769,8 @@ int k[N];
       //for(int r=0; r<MemoryManagerSavedCycles.size(); r++){
           if(MemoryManagerSavedCycles.size()>0 && MemoryManagerSavedCycles[0]==0){
             cout << Command_executed[0] << endl;
-
+            clockCount=   M-m+1;
+            //cout << clockCount << endl;
             // string helps= Command_executed[0];
             // int k=0;
             // for(int i= 0; i< helps.size(); i++){
@@ -659,11 +800,21 @@ int k[N];
             //     register_set[][map(s.substr(2,3))]=DRAM_memory[memoryLocation];
             //   }
             // }
+            //cout << "Here is seg fault 1" << endl;
+            if(Command_executed[0].substr(20,1)== "$"){
+              MemoryManagerRegister.erase(MemoryManagerRegister.begin());
+            }
+            if(Command_executed[0].substr(11,1)== "M"){
+              MemoryManagerExact.erase(MemoryManagerExact.begin());
+            }
 
-
+            //MemoryManagerExact.erase(MemoryManagerExact.begin());
             Command_executed.erase(Command_executed.begin());
             MemoryManagerSavedCycles.erase(MemoryManagerSavedCycles.begin());
             MemoryManager.erase(MemoryManager.begin());
+            //cout << "Here is seg fault 1" << endl;
+            //MemoryManagerRegister.erase(MemoryManagerExact.begin());
+            //cout << "Here is seg fault 2" << endl;
             //MemoryManagerSavedCycles
           }
         //}
@@ -686,8 +837,9 @@ int k[N];
           continue;
         }
         
-
+        //instructionCount+=1;
         if(s.size()>0 && s.substr(0,1)== "j"){
+
           string help= s.substr(1,s.size()-1);
           //cout << help << endl;
 
@@ -698,8 +850,15 @@ int k[N];
         }
 
         k[q]= process(printCheck, i[q], s, s1, q, countDown);
+
         //cout << "\n" << k[q];
         int returnval = k[q];
+        if(returnval==1){
+          instructionCount+=1;
+          clockCount= M-m+1;
+          //cout << clockCount << endl;
+        }
+
         while(returnval == 2 || returnval == 0){
           //cout << "This is for program q" << q << endl;
           if(returnval==2){
@@ -708,6 +867,11 @@ int k[N];
           }
           s = instruction_set[q][i[q]];
           returnval = process(printCheck, i[q], s, s1, q, countDown);
+          if(returnval==1){
+            instructionCount+=1;
+            clockCount=   M-m+1;
+            //cout << clockCount << endl;
+          }
           //cout << returnval << endl;
         }
         else if(returnval==0){return 0;}
@@ -746,17 +910,22 @@ int k[N];
   //}
 
   m--;
+  //cout << clockCount << endl;m
 
 
 }
+//cout << clockCount << endl;
 
 
   cout<< "\nMemory content at the end of execution: \n"<<endl;
   print_memory(DRAM_memory);
   cout<< "\n";
   //cout << "Total number of the instructions: " << instruction <<endl;
-  cout<< "Total number of clock cycles: " << clockNumber << endl;
-  cout<< "Total number of row buffer updates/row activations: " << rowBufferUpdates << endl;
+  cout<< "Total number of clock cycles: " << clockCount << endl;
+  cout << instructionCount << endl;
+  cout << "The thoughput of the given task is: " << (double)instructionCount/(double)clockCount<< endl;
+  //cout<< "The throughput of the program is: " << 
+  //cout<< "Total number of row buffer updates/row activations: " << rowBufferUpdates << endl;
 
   cout<< "Row access delay considered to be: " << rowAccessDelay<<endl;
   cout<< "Column access delay considered to be: " << columnAccessDelay<< endl;
